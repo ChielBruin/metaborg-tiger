@@ -10,12 +10,11 @@ imports
 
 
   nabl2/runtime/analysis/debug
-  nabl2/runtime/prelude/-
-  nabl2/runtime/pp
+//  nabl2/runtime/prelude/-
+//  nabl2/runtime/pp
   nabl2/api
   
 rules // Debugging
-  
   debug-show-aterm:
     (node, _, _, path, project-path) -> (filename, result)
     with
