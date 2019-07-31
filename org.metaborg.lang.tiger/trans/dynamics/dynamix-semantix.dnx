@@ -1,0 +1,111 @@
+module dynamic-semantics
+
+rules
+  map[ast -> instr]:: ast -> instr 
+  map[x]([e]) =
+    x(e)
+    
+  map[x]([h|t]) =
+    x(h);
+    map[x](t)
+
+  exitOK:: -> instr
+  exitOK() = 
+    rcf <- getCF(curCF(), $ret);
+    push(int(0), rcf);
+    returnCF(rcf)
+    
+  resolveVar:: ast -> ast
+  resolveVar(name) = resolve(name, "Var")
+    
+rules
+  eval:: ast -> instr
+  eval(Mod(exp)) =
+   val <- eval-exp(exp);
+   print(val);
+   exitOK()
+   
+  eval-exp:: ast -> val
+  eval-exp(Int(v)) = return(int(v))
+  
+  eval-exp(Plus(left, right)) = 
+    v1 <- eval-exp(left);
+    v2 <- eval-exp(right);
+    return(iadd(v1, v2))
+    
+  eval-exp(Let(binds, body)) = 
+    eval-let-binds(binds);
+    res <- eval-let-body(body);
+    return(res)
+    
+  eval-exp(Var(name)) = return(get(cur(), resolveVar(name)))
+    
+rules // Let internal rules
+  eval-let-body:: ast -> val
+  eval-let-body([exp]) =
+    v1 <- eval-exp(exp);
+    return(v1)
+      
+  eval-let-body([exp | tail]) =
+    v1 <- eval-exp(exp);
+    return(eval-let-body(tail))
+    
+  eval-let-binds:: ast -> instr
+  
+  
+  // How do we do the empty case?
+  // This would require a nop or something
+  eval-let-binds([]) = 
+    continue()
+    
+  eval-let-binds([FunDecs(funcs) | tail]) = 
+    eval-let-binds(funcs);
+    eval-let-binds(tail)
+    
+  func-return:: val -> return
+  func-return(val) =
+    rcf <- getCF(curCF(), $ret);
+    push(val, rcf);
+    returnCF(rcf)
+    
+  eval-let-binds([FunDec(name, args, _, body) | tail]) =
+    q <- zip-with-index(args);
+    map[associate-args](q);
+    fun_body <- <
+      v13 <- eval-exp(~body);
+      func-return(v13)
+    >;
+    associate-label(fun_body, name, "Var");
+    eval-let-binds(tail)
+    
+  eval-exp(Call(name, args)) =
+    callFrame <- new(int(length(args)));
+    store-args(zip-with-index(args), callFrame);
+    link(callFrame, get(cur(), resolve-scope(name, "Var")), &P);
+    callCF <- newCF(callFrame, resolve-label(name, "Var"), int(1));
+    setCF(callCF, $ret, curCF());
+    callCF(callCF);
+    return(pop(curCF()))
+  
+  associate-args:: ast -> instr
+  associate-args( (idx, FArg(name, _)) ) =
+    associate-index(idx, name, "Var") 
+  
+  store-args:: ast -> val -> instr
+  store-args([], _) = continue()
+  
+  store-args( [(idx, exp) | t ], frame ) =
+    val <- eval-exp(exp);
+    set(frame, [idx], val);
+    store-args(t, frame)
+    
+  eval-let-binds([VarDec(name, _, val) | tail]) = 
+    v1 <- eval-exp(val);
+    scope <- new(int(1));
+    link(scope, [], &P);
+    mkcur(scope);
+    set(scope, resolveVar(name), v1);
+    eval-let-binds(tail)
+    
+    
+    
