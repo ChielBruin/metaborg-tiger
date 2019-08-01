@@ -129,6 +129,14 @@ rules // Let internal rules
     set(scope, resolveVar(name), v1);
     eval-let-binds(tail)
     
+  eval-let-binds([VarDecNoType(name, val) | tail]) = 
+    v1 <- eval-exp(val);
+    scope <- new(int(1));
+    link(scope, [], &P);
+    mkcur(scope);
+    set(scope, resolveVar(name), v1);
+    eval-let-binds(tail)
+    
   eval-let-binds([TypeDecs(_) | tail]) = 
     scope <- new(int(0));
     link(scope, [], &P);
@@ -151,6 +159,11 @@ rules // Let internal rules
     v1 <- eval-exp(e1);
     v2 <- eval-exp(e2);
     return(igt(v1, v2))
+    
+  eval-exp(Lt(e1, e2)) =
+    v1 <- eval-exp(e1);
+    v2 <- eval-exp(e2);
+    return(ilt(v1, v2))
     
   eval-exp(Minus(e1, e2)) =
     v1 <- eval-exp(e1);
