@@ -1,5 +1,13 @@
 module dynamic-semantics
 
+imports
+  exp
+  records
+  flowexp
+  binexp
+  letexp
+  callexp
+  
 rules
   map[ast -> instr]:: ast -> instr 
   map[x]([e]) =
@@ -24,6 +32,8 @@ rules
    val <- eval-exp(exp);
    print(val);
    exitOK()
+   
+
    
   eval-exp:: ast -> val
   eval-exp(Int(v)) = return(int(v))

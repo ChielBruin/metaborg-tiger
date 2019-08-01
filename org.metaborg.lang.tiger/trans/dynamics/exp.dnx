@@ -1,0 +1,24 @@
+module exp
+
+imports dynamic-semantics
+
+rules
+  eval-exp(Int(v)) = return(int(v))
+  
+  eval-exp(Var(name)) = return(get(cur(), resolveVar(name)))
+  eval-exp(Seq(list)) =
+    return(eval-seq(list))
+    
+  eval-seq:: ast -> val
+  eval-seq([h]) = 
+    v1 <- eval-exp(h);
+    return(v1)
+  eval-seq([h | t]) = 
+    v1 <- eval-exp(h);
+    return(eval-seq(t))
+ 
+  eval-exp(Assign(Var(var), exp)) =
+    v1 <- eval-exp(exp);
+    set(cur(), resolveVar(var), v1);
+    // TODO: Should be a void return
+    return(new(int(0)))

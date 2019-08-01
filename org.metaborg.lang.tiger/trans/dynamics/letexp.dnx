@@ -1,0 +1,77 @@
+module letexp
+
+imports dynamic-semantics
+
+rules
+  eval-exp(Let(binds, body)) =
+    old_s <- cur();
+    eval-let-binds(binds);
+    res <- eval-let-body(body);
+    mkcur(old_s);
+    return(res)
+       
+rules // Let internal rules
+  eval-let-body:: ast -> val
+  eval-let-body([exp]) =
+    v1 <- eval-exp(exp);
+    return(v1)
+      
+  eval-let-body([exp | tail]) =
+    v1 <- eval-exp(exp);
+    return(eval-let-body(tail))
+    
+  eval-let-binds:: ast -> instr
+  eval-let-binds([]) = 
+    continue()
+    
+  eval-let-binds([FunDecs(funcs) | tail]) =
+    scope <- new(int(0));
+    link(scope, [], &P);
+    mkcur(scope);
+    new_s <- eval-let-binds(funcs);
+    eval-let-binds(tail)
+    
+  eval-let-binds([FunDec(name, args, _, body) | tail]) =
+    scope <- new(int(0));
+    link(scope, [], &P);
+    mkcur(scope);
+    
+    q <- zip-with-index(args);
+    map[associate-args](q);
+    fun_body <- <
+      v13 <- eval-exp(~body);
+      func-return(v13)
+    >;
+    associate-label(fun_body, name, "Var");
+    eval-let-binds(tail)
+  
+  func-return:: val -> return
+  func-return(val) =
+    rcf <- getCF(curCF(), $ret);
+    push(val, rcf);
+    returnCF(rcf)
+  associate-args:: ast -> instr
+  associate-args( (idx, FArg(name, _)) ) =
+    associate-index(idx, name, "Var")
+    
+  eval-let-binds([VarDec(name, _, val) | tail]) = 
+    v1 <- eval-exp(val);
+    scope <- new(int(1));
+    link(scope, [], &P);
+    mkcur(scope);
+    set(scope, resolveVar(name), v1);
+    eval-let-binds(tail)
+    
+  eval-let-binds([VarDecNoType(name, val) | tail]) = 
+    v1 <- eval-exp(val);
+    scope <- new(int(1));
+    link(scope, [], &P);
+    mkcur(scope);
+    set(scope, resolveVar(name), v1);
+    eval-let-binds(tail)
+    
+  eval-let-binds([TypeDecs(_) | tail]) = 
+    scope <- new(int(0));
+    link(scope, [], &P);
+    mkcur(scope);
+    eval-let-binds(tail)

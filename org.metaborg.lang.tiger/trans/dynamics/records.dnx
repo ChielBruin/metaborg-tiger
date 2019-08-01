@@ -1,0 +1,31 @@
+module records
+
+imports dynamic-semantics
+
+rules
+  eval-exp(Record(_, vals)) =
+    rec <- new(int(length(vals)));
+    store-field(zip-with-index(vals), rec);
+    return(rec)
+    
+  
+  store-field:: ast -> val -> instr
+  store-field([], _) = continue()
+  
+  store-field( [(idx, InitField(name, exp)) | t ], frame ) =
+    val <- eval-exp(exp);
+    set(frame, [idx], val);
+    associate-index(idx, name, "Field");
+    store-field(t, frame)
+    
+  eval-exp(FieldVar(Var(name), slot)) =
+    rec <- get(cur(), resolveVar(name));
+    s <- new(int(0));
+    link(s, rec, &I);
+    val <- get(s, resolve(slot, "Field"));
+    return(val)
+  
+  eval-exp(NilExp()) = return(new(int(0)))
+    
+    
+    

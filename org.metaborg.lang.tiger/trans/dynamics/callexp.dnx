@@ -1,0 +1,34 @@
+module callexp
+
+imports dynamic-semantics
+
+rules
+  eval-exp(Call("chr", [arg])) =
+    v1 <- eval-exp(arg);
+    // TODO: This should return a string, not a char
+    return(iadd(int(48), v1))
+    
+  eval-exp(Call("print", [arg])) =
+    v1 <- eval-exp(arg);
+    // TODO: This should print strings, not chars
+    printc(v1);
+    printc(int(10)); // Newline
+    // TODO: Should be void/null
+    return(new(int(0)))
+    
+  eval-exp(Call(name, args)) =
+    callFrame <- new(int(length(args)));
+    store-args(zip-with-index(args), callFrame);
+    link(callFrame, get(cur(), resolve-scope(name, "Var")), &P);
+    callCF <- newCF(callFrame, resolve-label(name, "Var"), int(1));
+    setCF(callCF, $ret, curCF());
+    callCF(callCF);
+    return(pop(curCF()))
+  
+  store-args:: ast -> val -> instr
+  store-args([], _) = continue()
+  
+  store-args( [(idx, exp) | t ], frame ) =
+    val <- eval-exp(exp);
+    set(frame, [idx], val);
+    store-args(t, frame)  

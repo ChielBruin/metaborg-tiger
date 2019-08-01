@@ -1,0 +1,39 @@
+module flowexp
+
+imports dynamic-semantics
+
+rules
+  eval-exp(If(cond, then, else)) = 
+    c <- eval-exp(cond);
+    jumpz(c, ELSE, THEN);
+   THEN;
+    v1 <- eval-exp(then);
+    jump(CONT);
+   ELSE;
+    v1 <- eval-exp(else);
+    jump(CONT);
+   CONT;
+    return(v1)
+    
+  eval-exp(For(Var(idx_var), init, cond, body)) =
+    vi <- eval-exp(init);
+    max <- eval-exp(cond);
+    scope <- new(int(1));
+    link(scope, [], &P);
+    mkcur(scope);
+    idx_path <- resolveVar(idx_var);
+    set(cur(), idx_path, vi);
+    jump(FOR);
+   FOR;
+    cur <- get(cur(), idx_path);
+    jumpz(igt(cur, max), FOR_BODY, FOR_END);
+   FOR_BODY;
+    v1 <- eval-exp(body);
+    
+    // increment loop index
+    set(cur(), idx_path, iadd(get(cur(), idx_path), int(1)));
+    jump(FOR);
+   FOR_END;
+    mkcur(get(cur(), [&P]));
+    // TODO: Should be a void return
+    return(new(int(0)))

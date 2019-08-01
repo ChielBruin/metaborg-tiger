@@ -1,0 +1,29 @@
+module binexp
+ 
+imports dynamic-semantics
+ 
+rules 
+  eval-exp(Plus(left, right)) = 
+    v1 <- eval-exp(left);
+    v2 <- eval-exp(right);
+    return(iadd(v1, v2))
+    
+  eval-exp(Gt(e1, e2)) =
+    v1 <- eval-exp(e1);
+    v2 <- eval-exp(e2);
+    return(igt(v1, v2))
+    
+  eval-exp(Lt(e1, e2)) =
+    v1 <- eval-exp(e1);
+    v2 <- eval-exp(e2);
+    return(ilt(v1, v2))
+    
+  eval-exp(Minus(e1, e2)) =
+    v1 <- eval-exp(e1);
+    v2 <- eval-exp(e2);
+    return(isub(v1, v2))
+    
+  eval-exp(Times(e1, e2)) =
+    v1 <- eval-exp(e1);
+    v2 <- eval-exp(e2);
+    return(imul(v1, v2))    
