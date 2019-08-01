@@ -10,8 +10,8 @@ imports
   
 rules
   map[ast -> instr]:: ast -> instr 
-  map[x]([e]) =
-    x(e)
+  map[x]([]) =
+    continue()
     
   map[x]([h|t]) =
     x(h);
