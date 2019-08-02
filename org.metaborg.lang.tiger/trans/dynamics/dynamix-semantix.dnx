@@ -8,6 +8,17 @@ imports
   letexp
   callexp
   
+signature
+  link-labels
+    P
+    I
+  continuations
+    ret
+
+  namespaces
+    Var
+    Field
+   
 rules
   map[ast -> instr]:: ast -> instr 
   map[x]([]) =

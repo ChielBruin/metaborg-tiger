@@ -26,6 +26,3 @@ rules
     return(val)
   
   eval-exp(NilExp()) = return(new(int(0)))
-    
-    
-    
