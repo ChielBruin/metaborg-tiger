@@ -9,3 +9,6 @@
 *.name-resolution
 *.unifier
 *.symbolic
+*.aterm
+*.dnx.rgr
+*.value
