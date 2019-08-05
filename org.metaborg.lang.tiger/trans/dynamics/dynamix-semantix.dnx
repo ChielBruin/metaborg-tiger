@@ -39,8 +39,15 @@ rules
     
 rules
   eval-exp:: ast -> val
+  eval-unit-exp:: ast -> instr
+  
   eval:: ast -> instr
   eval(Mod(exp)) =
-   val <- eval-exp(exp);
-   print(val);
+   eval-instr(exp);
    exitOK()  
+   
+  eval-instr:: ast -> instr
+  eval-instr(exp:UNIT()) = eval-unit-exp(exp)
+  eval-instr(exp) = 
+    v1 <- eval-exp(exp);
+    print(v1)

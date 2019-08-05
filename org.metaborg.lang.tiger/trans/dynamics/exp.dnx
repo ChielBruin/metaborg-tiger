@@ -13,12 +13,28 @@ rules
   eval-seq([h]) = 
     v1 <- eval-exp(h);
     return(v1)
+  eval-seq([h:UNIT() | t]) = 
+    eval-unit-exp(h);
+    return(eval-seq(t))
   eval-seq([h | t]) = 
     v1 <- eval-exp(h);
     return(eval-seq(t))
+    
+  
+  eval-unit-exp(Seq(list)) =
+    eval-unit-seq(list)
+    
+  eval-unit-seq:: ast -> instr
+  eval-unit-seq([h]) = 
+    eval-unit-exp(h)
+  
+  eval-unit-seq([h:UNIT() | t]) = 
+    eval-unit-exp(h);
+    eval-unit-seq(t)
+  eval-unit-seq([h | t]) = 
+    v1 <- eval-exp(h);
+    eval-unit-seq(t)
  
-  eval-exp(Assign(Var(var), exp)) =
+  eval-unit-exp(Assign(Var(var), exp)) =
     v1 <- eval-exp(exp);
-    set(cur(), resolveVar(var), v1);
-    // TODO: Should be a void return
-    return(new(int(0)))
+    set(cur(), resolveVar(var), v1)

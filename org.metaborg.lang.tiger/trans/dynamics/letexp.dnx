@@ -9,17 +9,41 @@ rules
     res <- eval-let-body(body);
     mkcur(old_s);
     return(res)
+  
+  eval-unit-exp(Let(binds, body)) =
+    old_s <- cur();
+    eval-let-binds(binds);
+    eval-let-body-unit(body);
+    mkcur(old_s)
        
-rules // Let internal rules
+// Let internal rules
+rules // Let body
   eval-let-body:: ast -> val
   eval-let-body([exp]) =
     v1 <- eval-exp(exp);
     return(v1)
       
+  eval-let-body([exp:UNIT() | tail]) =
+    eval-unit-exp(exp);
+    return(eval-let-body(tail))
+    
   eval-let-body([exp | tail]) =
     v1 <- eval-exp(exp);
     return(eval-let-body(tail))
     
+  eval-let-body-unit:: ast -> instr
+  eval-let-body-unit([exp]) =
+    eval-unit-exp(exp)
+      
+  eval-let-body-unit([exp:UNIT() | tail]) =
+    eval-unit-exp(exp);
+    eval-let-body-unit(tail)
+      
+  eval-let-body-unit([exp | tail]) =
+    v1 <- eval-exp(exp);
+    eval-let-body-unit(tail)
+
+rules // Let bindings
   eval-let-binds:: ast -> instr
   eval-let-binds([]) = 
     continue()

@@ -28,12 +28,9 @@ rules
   // TODO: This is not a proper NULL
   eval-exp(NilExp()) = return(new(int(0)))
   
-  eval-exp(Assign(FieldVar(f, name), exp)) =
+  eval-unit-exp(Assign(FieldVar(f, name), exp)) =
     v1 <- eval-exp(exp);
     rec <- eval-exp(f);
     s <- new(int(0));
     link(s, rec, &I);
-    set(s, resolve(name, "Field"), v1);
-    // TODO: Implement this
-    // TODO: Should be a void return
-    return(new(int(0)))
+    set(s, resolve(name, "Field"), v1)

@@ -3,6 +3,7 @@ module flowexp
 imports dynamic-semantics
 
 rules
+  // A UNIT() type if is not valid according to the spec
   eval-exp(If(cond, then, else)) = 
     c <- eval-exp(cond);
     jumpz(c, ELSE, THEN);
@@ -15,7 +16,7 @@ rules
    CONT;
     return(v1)
     
-  eval-exp(For(Var(idx_var), init, cond, body)) =
+  eval-unit-exp(For(Var(idx_var), init, cond, body)) =
     vi <- eval-exp(init);
     max <- eval-exp(cond);
     scope <- new(int(1));
@@ -28,12 +29,10 @@ rules
     cur <- get(cur(), idx_path);
     jumpz(igt(cur, max), FOR_BODY, FOR_END);
    FOR_BODY;
-    v1 <- eval-exp(body);
+    eval-unit-exp(body);
     
     // increment loop index
     set(cur(), idx_path, iadd(get(cur(), idx_path), int(1)));
     jump(FOR);
    FOR_END;
-    mkcur(get(cur(), [&P]));
-    // TODO: Should be a void return
-    return(new(int(0)))
+    mkcur(get(cur(), [&P]))

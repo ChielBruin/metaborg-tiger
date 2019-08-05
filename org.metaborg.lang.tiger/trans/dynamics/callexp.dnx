@@ -8,13 +8,11 @@ rules
     // TODO: This should return a string, not a char
     return(iadd(int(48), v1))
     
-  eval-exp(Call("print", [arg])) =
+  eval-unit-exp(Call("print", [arg])) =
     v1 <- eval-exp(arg);
     // TODO: This should print strings, not chars
     printc(v1);
-    printc(int(10)); // Newline
-    // TODO: Should be void/null
-    return(new(int(0)))
+    printc(int(10)) // Newline
     
   eval-exp(Call(name, args)) =
     callFrame <- new(int(length(args)));
