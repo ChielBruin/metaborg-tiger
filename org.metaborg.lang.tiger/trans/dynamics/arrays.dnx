@@ -1,0 +1,19 @@
+module arrays
+
+imports common
+
+rules
+  eval-exp(Array(_, size, init_val)) =
+    s <- eval-exp(size);
+    arr <- new(s);
+    init <- eval-exp(init_val);
+    //TODO: How to assign the default value to all slots?
+    // We would need simple integer addition, subtraction and comparisons
+    // Should the comparison conditions be part of the rule signature (probably yes)
+    
+    return(arr)
+    
+  eval-exp(Subscript(arr, idx)) =
+    frame <- eval-exp(arr);
+    index <- eval-exp(idx);
+    return(get(frame, index))

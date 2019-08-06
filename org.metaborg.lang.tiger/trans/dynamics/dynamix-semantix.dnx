@@ -20,27 +20,6 @@ signature
     Field
    
 rules
-  map[ast -> instr]:: ast -> instr 
-  map[x]([]) =
-    continue()
-    
-  map[x]([h|t]) =
-    x(h);
-    map[x](t)
-
-  exitOK:: -> instr
-  exitOK() = 
-    rcf <- getCF(curCF(), $ret);
-    push(int(0), rcf);
-    returnCF(rcf)
-    
-  resolveVar:: ast -> ast
-  resolveVar(name) = resolve(name, "Var")
-    
-rules
-  eval-exp:: ast -> val
-  eval-unit-exp:: ast -> instr
-  
   eval:: ast -> instr
   eval(Mod(exp)) =
    eval-instr(exp);

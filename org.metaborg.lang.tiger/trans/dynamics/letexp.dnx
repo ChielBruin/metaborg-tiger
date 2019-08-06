@@ -1,6 +1,6 @@
 module letexp
 
-imports dynamic-semantics
+imports common
 
 rules
   eval-exp(Let(binds, body)) =
@@ -65,6 +65,19 @@ rules // Let bindings
     fun_body <- <
       v13 <- eval-exp(~body);
       func-return(v13)
+    >;
+    associate-label(fun_body, name, "Var");
+    eval-let-binds(tail)
+    
+  eval-let-binds([ProcDec(name, args, body) | tail]) =
+    scope <- new(int(0));
+    link(scope, [], &P);
+    mkcur(scope);
+    
+    q <- zip-with-index(args);
+    map[associate-args](q);
+    fun_body <- <
+      eval-unit-exp(~body)
     >;
     associate-label(fun_body, name, "Var");
     eval-let-binds(tail)

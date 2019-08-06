@@ -1,11 +1,12 @@
 module exp
 
-imports dynamic-semantics
+imports common
 
 rules
   eval-exp(Int(v)) = return(int(v))
   
   eval-exp(Var(name)) = return(get(cur(), resolveVar(name)))
+  
   eval-exp(Seq(list)) =
     return(eval-seq(list))
     

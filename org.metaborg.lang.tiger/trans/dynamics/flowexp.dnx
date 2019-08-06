@@ -1,6 +1,6 @@
 module flowexp
 
-imports dynamic-semantics
+imports common
 
 rules
   // A UNIT() type if is not valid according to the spec

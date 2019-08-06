@@ -1,6 +1,6 @@
 module records
 
-imports dynamic-semantics
+imports common
 
 rules
   eval-exp(Record(_, vals)) =

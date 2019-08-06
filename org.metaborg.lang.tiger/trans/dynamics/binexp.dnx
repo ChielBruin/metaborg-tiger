@@ -1,6 +1,6 @@
 module binexp
  
-imports dynamic-semantics
+imports common
  
 rules 
   eval-exp(Plus(left, right)) = 
@@ -22,6 +22,11 @@ rules
     v1 <- eval-exp(e1);
     v2 <- eval-exp(e2);
     return(isub(v1, v2))
+    
+  eval-exp(Eq(e1, e2):INT()) =
+    v1 <- eval-exp(e1);
+    v2 <- eval-exp(e2);
+    return(ieq(v1, v2))
     
   eval-exp(Times(e1, e2)) =
     v1 <- eval-exp(e1);

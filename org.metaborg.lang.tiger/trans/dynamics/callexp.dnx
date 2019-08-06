@@ -1,6 +1,6 @@
 module callexp
 
-imports dynamic-semantics
+imports common
 
 rules
   eval-exp(Call("chr", [arg])) =
@@ -22,6 +22,15 @@ rules
     setCF(callCF, $ret, curCF());
     callCF(callCF);
     return(pop(curCF()))
+  
+    
+  eval-unit-exp(Call(name, args)) =
+    callFrame <- new(int(length(args)));
+    store-args(zip-with-index(args), callFrame);
+    link(callFrame, get(cur(), resolve-scope(name, "Var")), &P);
+    callCF <- newCF(callFrame, resolve-label(name, "Var"), int(1));
+    setCF(callCF, $ret, curCF());
+    callCF(callCF)
   
   store-args:: ast -> val -> instr
   store-args([], _) = continue()
