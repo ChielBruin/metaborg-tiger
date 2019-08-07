@@ -77,7 +77,9 @@ rules // Let bindings
     q <- zip-with-index(args);
     map[associate-args](q);
     fun_body <- <
-      eval-unit-exp(~body)
+      eval-unit-exp(~body);
+      rcf <- getCF(curCF(), $ret);
+      returnCF(rcf)
     >;
     associate-label(fun_body, name, "Var");
     eval-let-binds(tail)

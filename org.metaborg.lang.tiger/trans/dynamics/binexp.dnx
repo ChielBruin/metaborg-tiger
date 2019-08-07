@@ -31,4 +31,9 @@ rules
   eval-exp(Times(e1, e2)) =
     v1 <- eval-exp(e1);
     v2 <- eval-exp(e2);
-    return(imul(v1, v2))    
+    return(imul(v1, v2))  
+    
+  eval-exp(And(e1, e2)) =
+    v1 <- eval-exp(e1);
+    v2 <- eval-exp(e2);
+    return(iand(v1, v2))    

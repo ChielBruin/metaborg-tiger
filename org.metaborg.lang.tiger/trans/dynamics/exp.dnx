@@ -5,6 +5,8 @@ imports common
 rules
   eval-exp(Int(v)) = return(int(v))
   
+  eval-exp(Uminus(exp)) = return(ineg(eval-exp(exp)))
+  
   eval-exp(Var(name)) = return(get(cur(), resolveVar(name)))
   
   eval-exp(Seq(list)) =

@@ -3,7 +3,25 @@ module flowexp
 imports common
 
 rules
-  // A UNIT() type if is not valid according to the spec
+  eval-unit-exp(IfThen(cond, then):UNIT()) = 
+    c <- eval-exp(cond);
+    jumpz(c, CONT, THEN);
+   THEN;
+    eval-unit-exp(then);
+    jump(CONT);
+   CONT
+   
+  eval-unit-exp(If(cond, then, else):UNIT()) = 
+    c <- eval-exp(cond);
+    jumpz(c, ELSE, THEN);
+   THEN;
+    eval-unit-exp(then);
+    jump(CONT);
+   ELSE;
+    eval-unit-exp(else);
+    jump(CONT);
+   CONT
+    
   eval-exp(If(cond, then, else)) = 
     c <- eval-exp(cond);
     jumpz(c, ELSE, THEN);
@@ -16,7 +34,8 @@ rules
    CONT;
     return(v1)
     
-  eval-unit-exp(For(Var(idx_var), init, cond, body)) =
+  eval-unit-exp(stmt@For(Var(idx_var), init, cond, body)) =
+    associate-label(FOR_END, "__break__"@stmt, "Loop");
     vi <- eval-exp(init);
     max <- eval-exp(cond);
     scope <- new(int(1));
@@ -35,4 +54,33 @@ rules
     set(cur(), idx_path, iadd(get(cur(), idx_path), int(1)));
     jump(FOR);
    FOR_END;
-    mkcur(get(cur(), [&P]))
+    mkcur(get(cur(), [&P]));
+    jump(FOR_EXIT);
+   FOR_EXIT
+    
+  eval-unit-exp(stmt@While(cond, body)) =
+    associate-label(WHILE_END, "__break__"@stmt, "Loop");
+    jump(WHILE);
+   WHILE;
+    c <- eval-exp(cond);
+    jumpz(c, WHILE_END, WHILE_BODY);
+   WHILE_BODY;
+    scope <- new(int(0));
+    link(scope, [], &P);
+    mkcur(scope);
+    
+    eval-unit-exp(body);
+    
+    mkcur(get(cur(), [&P]));
+    jump(WHILE);
+   WHILE_END;
+    jump(WHILE_EXIT);
+   WHILE_EXIT
+    
+  eval-unit-exp(b@Break()) =
+    break <- "__break__"@b;
+    scope <- resolve-scope(break, "Loop");
+    mkcur(get(cur(), scope));
+    jump(resolve-label(break, "Loop"));
+    DEAD_CODE
+

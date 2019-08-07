@@ -7,6 +7,9 @@ imports
   binexp
   letexp
   callexp
+  arrays
+  strings
+  common
   
 signature
   link-labels
@@ -29,4 +32,4 @@ rules
   eval-instr(exp:UNIT()) = eval-unit-exp(exp)
   eval-instr(exp) = 
     v1 <- eval-exp(exp);
-    print(v1)
+    printc(iadd(int(48), v1))

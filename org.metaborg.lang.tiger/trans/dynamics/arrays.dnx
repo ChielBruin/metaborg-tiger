@@ -17,3 +17,9 @@ rules
     frame <- eval-exp(arr);
     index <- eval-exp(idx);
     return(get(frame, index))
+    
+  eval-unit-exp(Assign(Subscript(array, index), value)) = 
+    idx <- eval-exp(index);
+    arr <- eval-exp(array);
+    val <- eval-exp(value);
+    set(arr, idx, val)
