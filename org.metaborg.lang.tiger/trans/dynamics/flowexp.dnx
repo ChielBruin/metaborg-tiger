@@ -73,14 +73,15 @@ rules
     
     mkcur(get(cur(), [&P]));
     jump(WHILE);
-   WHILE_END;
-    jump(WHILE_EXIT);
-   WHILE_EXIT
+   WHILE_BREAK;
+    mkcur(get(cur(), [&P]));
+    jump(WHILE_END);
+   WHILE_END
     
   eval-unit-exp(b@Break()) =
     break <- "__break__"@b;
-    scope <- resolve-scope(break, "Loop");
-    mkcur(get(cur(), scope));
+    path <- resolve-scope(break, "Loop");
+    mkcur(get(cur(), path));
     jump(resolve-label(break, "Loop"));
     DEAD_CODE
 
