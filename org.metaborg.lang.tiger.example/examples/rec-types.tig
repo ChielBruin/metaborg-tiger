@@ -14,6 +14,7 @@ let
       tl = treelist{ hd = tree{ key = 4, children = nil }, tl = nil }
     } 
   };
-  t.children.hd.children := t.children 
+  t.children.hd.children := t.children;
+  print(chr(t.children.hd.children.hd.key))
 end 
  

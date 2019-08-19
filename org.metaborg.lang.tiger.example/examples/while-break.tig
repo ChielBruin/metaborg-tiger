@@ -2,6 +2,11 @@ let
   var count := 0
 in
   while count > -1 do
-    break
+    if count > 3 then
+      break
+    else
+      count := count + 1
+  ;
+  print(chr(count))
 end
 

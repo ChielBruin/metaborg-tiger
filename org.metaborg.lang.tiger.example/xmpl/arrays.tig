@@ -9,7 +9,7 @@ var v : vector := vector[3] of 1
 var t : matrix := matrix[2] of vector[3] of 0
 
 in for i := 0 to 1 do 
-     t[i] := vector[3] of i;
+   t[i] := vector[3] of i;
      
    for i := 0 to 1 do
      for j := 0 to 2 do

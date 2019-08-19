@@ -4,7 +4,7 @@ let
 in
   for y := 1 to x do ( 
     f := f * y
-  );  
-  print("s");     
-  print(chr(x)) // y not in scope  
-end    
+  );
+//  print("s");     
+  print(chr(f)) // y not in scope  
+end
