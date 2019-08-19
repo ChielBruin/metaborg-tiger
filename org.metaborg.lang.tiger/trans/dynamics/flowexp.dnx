@@ -54,12 +54,10 @@ rules
     set(cur(), idx_path, iadd(get(cur(), idx_path), int(1)));
     jump(FOR);
    FOR_END;
-    mkcur(get(cur(), [&P]));
-    jump(FOR_EXIT);
-   FOR_EXIT
+    mkcur(get(cur(), [&P]))
     
   eval-unit-exp(stmt@While(cond, body)) =
-    associate-label(WHILE_END, "__break__"@stmt, "Loop");
+    associate-label(WHILE_BREAK, "__break__"@stmt, "Loop");
     jump(WHILE);
    WHILE;
     c <- eval-exp(cond);
