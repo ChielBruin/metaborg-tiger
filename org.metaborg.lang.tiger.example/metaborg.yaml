@@ -4,6 +4,7 @@ name: Tiger
 dependencies:
   compile:
   - org.metaborg:org.metaborg.lang.tiger:0.1.0-SNAPSHOT
+  - org.metaborg.lang:framevm:1.1.0
 debug:
   typesmart: false
 runtime:
