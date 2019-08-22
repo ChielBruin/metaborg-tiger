@@ -1,0 +1,33 @@
+module interpreter/integer
+
+language Tiger
+
+test Single number [[1]] run dnx-run-spt to "1"
+
+test Addition 1 [[1 + 2]]   run dnx-run-spt to "3"
+test Addition 2 [[-1 + 2]]  run dnx-run-spt to "1"
+test Addition 3 [[10 + -8]] run dnx-run-spt to "2"
+
+test Subtraction 1 [[2 - 1]]   run dnx-run-spt to "1"
+test Subtraction 2 [[-1 - -2]] run dnx-run-spt to "1"
+test Subtraction 3 [[1 - -8]]  run dnx-run-spt to "9"
+
+test Times 1 [[2 * 3]]   run dnx-run-spt to "6"
+test Times 2 [[-1 * -2]] run dnx-run-spt to "2"
+test Times 3 [[0 * -8]]  run dnx-run-spt to "0"
+
+test Gt 1 [[2 > 1]]   run dnx-run-spt to "1"
+test Gt 2 [[1 > 2]]   run dnx-run-spt to "0"
+test Gt 3 [[-1 > -8]] run dnx-run-spt to "1"
+test Gt 4 [[1 > 1]]   run dnx-run-spt to "0"
+
+test Lt 1 [[2 < 1]]   run dnx-run-spt to "0"
+test Lt 2 [[1 < 2]]   run dnx-run-spt to "1"
+test Lt 3 [[-1 < -8]] run dnx-run-spt to "0"
+test Lt 4 [[1 < 1]]   run dnx-run-spt to "0"
+
+test Eq 1 [[2 = 1]]   run dnx-run-spt to "0"
+test Eq 2 [[2 = 2]]   run dnx-run-spt to "1"
+
+test And 1 [[0 & 1]]  run dnx-run-spt to "0"
+test And 2 [[2 < 4 & 1 < 2]] run dnx-run-spt to "1"

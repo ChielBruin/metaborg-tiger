@@ -1,0 +1,59 @@
+module interpreter/integer
+
+language Tiger
+
+test Single array [[
+let
+  type arr = array of int
+  var v : arr := arr[1] of 1
+in (
+  v[0] := 6;
+  v[0]
+) 
+end
+]] run dnx-run-spt to "6"
+
+test Multiple array [[
+let
+  type arr = array of int
+  var v : arr := arr[5] of 1
+in (
+  v[3] := 6;
+  v[0] := 3;
+  v[3] + v [0]
+) 
+end
+]] run dnx-run-spt to "9"
+
+test Array default value [[
+let
+  type arr = array of int
+  var v : arr := arr[1] of 4
+in (
+  v[0]
+) 
+end
+]] run dnx-run-spt to "4"
+
+test Array default value 2 [[
+let
+  type arr = array of int
+  var v : arr := arr[4] of 4
+in (
+  v[3]
+) 
+end
+]] run dnx-run-spt to "4"
+
+test Array nested [[
+let
+  type arr = array of int
+  type arr2 = array of arr
+  var v : arr2 := arr2[4] of arr[1] of 1
+in (
+  v[3] := arr[1] of 1;	// TODO: remove this line after adding default values
+  v[3][0] := 9;
+  v[3][0]
+) 
+end
+]] run dnx-run-spt to "9"

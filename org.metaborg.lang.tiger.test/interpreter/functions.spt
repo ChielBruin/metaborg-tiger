@@ -1,0 +1,42 @@
+module interpreter/integer
+
+language Tiger
+
+test Circular recursion [[
+let
+  function odd(x : int) : int = 
+    if x > 0 then even(x - 1) else 0
+    
+  function even(x : int) : int = 
+    if x > 0 then odd(x - 1) else 1
+ in
+   even(34) 
+end
+]] run dnx-run-spt to "1"
+
+test Recursion [[
+let
+  function count(x : int) : int = 
+    if x > 0 then 1 + count(x - 1) else 0
+ in
+   count(9) 
+end
+]] run dnx-run-spt to "9"
+
+test Adder [[
+let
+  function add(x : int, y : int) : int = 
+    x + y
+ in
+   add(2, 3) 
+end
+]] run dnx-run-spt to "5"
+
+test Complex arguments [[
+let
+  function inc(x : int) : int = 
+    x + 1
+ in
+   inc(inc(inc(2))) 
+end
+]] run dnx-run-spt to "5"
