@@ -6,10 +6,7 @@ rules
   eval-exp(Array(_, size, init_val)) =
     s <- eval-exp(size);
     arr <- new(s);
-    init <- eval-exp(init_val);
-    //TODO: How to assign the default value to all slots?
-    // We would need simple integer addition, subtraction and comparisons
-    // Should the comparison conditions be part of the rule signature (probably yes)
+    init-array(arr, s, init_val);
     
     return(arr)
     
@@ -23,3 +20,20 @@ rules
     arr <- eval-exp(array);
     val <- eval-exp(value);
     set(arr, idx, val)
+
+rules
+  // The size of an array is not constant, so we cannot solve this using meta-arithmetic
+  init-array:: val -> val -> ast -> instr
+  init-array(array, size, exp) =
+    idx <- int(0);
+    jump(INIT);
+   INIT;
+    jumpz(ieq(idx, size), INIT_LOOP, INIT_END);
+   INIT_LOOP;
+    val <- eval-exp(exp);
+    set(array, idx, val);
+    idx <- iadd(idx, int(1));
+    jump(INIT);
+   INIT_END
+   
+  

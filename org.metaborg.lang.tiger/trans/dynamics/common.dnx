@@ -14,10 +14,20 @@ rules
     rcf <- getCF(curCF(), $ret);
     push(int(0), rcf);
     returnCF(rcf)
-    
+  
   resolveVar:: ast -> ast
   resolveVar(name) = resolve(name, "Var")
-    
+  
+  zip-with-index:: ast -> ast
+  zip-with-index(list) =
+    zip--with--index(list, 0)
+  
+  zip--with--index:: ast -> ast -> ast
+  zip--with--index([], idx) = []
+  zip--with--index([h | t], idx) =
+    tail <- zip--with--index(t, idx + 1);
+    [(idx, h) | tail]
+  
 rules
   eval-exp:: ast -> val
   eval-unit-exp:: ast -> instr

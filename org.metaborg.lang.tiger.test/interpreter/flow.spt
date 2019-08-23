@@ -28,4 +28,4 @@ in (
   );
   c
 ) end
-]] run dnx-run-spt to "5"
+]] run dnx-run-spt to "3"
