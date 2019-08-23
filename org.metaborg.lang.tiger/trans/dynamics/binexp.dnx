@@ -12,11 +12,21 @@ rules
     v1 <- eval-exp(e1);
     v2 <- eval-exp(e2);
     return(igt(v1, v2))
-    
+  
   eval-exp(Lt(e1, e2)) =
     v1 <- eval-exp(e1);
     v2 <- eval-exp(e2);
     return(ilt(v1, v2))
+    
+  eval-exp(Geq(e1, e2)) =
+    v1 <- eval-exp(e1);
+    v2 <- eval-exp(e2);
+    return(ior(igt(v1, v2), ieq(v1, v2)))
+    
+  eval-exp(Leq(e1, e2)) =
+    v1 <- eval-exp(e1);
+    v2 <- eval-exp(e2);
+    return(ior(ilt(v1, v2), ieq(v1, v2)))
     
   eval-exp(Minus(e1, e2)) =
     v1 <- eval-exp(e1);
@@ -27,6 +37,11 @@ rules
     v1 <- eval-exp(e1);
     v2 <- eval-exp(e2);
     return(ieq(v1, v2))
+    
+  eval-exp(Neq(e1, e2)) =
+    v1 <- eval-exp(e1);
+    v2 <- eval-exp(e2);
+    return(isub(int(1), ieq(v1, v2)))
     
   eval-exp(Times(e1, e2)) =
     v1 <- eval-exp(e1);
