@@ -18,7 +18,6 @@ rules
        
 // Let internal rules
 rules // Let body
-  eval-let-body:: ast -> val
   eval-let-body([exp]) =
     v1 <- eval-exp(exp);
     return(v1)
@@ -31,7 +30,6 @@ rules // Let body
     v1 <- eval-exp(exp);
     return(eval-let-body(tail))
     
-  eval-let-body-unit:: ast -> instr
   eval-let-body-unit([exp]) =
     eval-unit-exp(exp)
       
@@ -44,52 +42,41 @@ rules // Let body
     eval-let-body-unit(tail)
 
 rules // Let bindings
-  eval-let-binds:: ast -> instr
   eval-let-binds([]) = 
-    continue()
+    nop()
     
   eval-let-binds([FunDecs(funcs) | tail]) =
-    scope <- new(int(0));
+    scope <- new(int(length(funcs)));
     link(scope, [], &P);
     mkcur(scope);
-    new_s <- eval-let-binds(funcs);
+    eval-let-binds(funcs);
     eval-let-binds(tail)
     
   eval-let-binds([FunDec(name, args, _, body) | tail]) =
-    scope <- new(int(0));
-    link(scope, [], &P);
-    mkcur(scope);
-    
-    q <- zip-with-index(args);
+    q = zip-with-index(args);
     map[associate-args](q);
-    fun_body <- <
+    fun_body = <
       v13 <- eval-exp(~body);
       func-return(v13)
     >;
-    associate-label(fun_body, name, "Var");
+    set(cur(), resolveVar(name), fun_body);
     eval-let-binds(tail)
     
   eval-let-binds([ProcDec(name, args, body) | tail]) =
-    scope <- new(int(0));
-    link(scope, [], &P);
-    mkcur(scope);
-    
-    q <- zip-with-index(args);
+    q = zip-with-index(args);
     map[associate-args](q);
-    fun_body <- <
+    fun_body = <
       eval-unit-exp(~body);
-      rcf <- getCF(curCF(), $ret);
-      returnCF(rcf)
+      rcf <- getC(curCF(), $ret);
+      callC(rcf)
     >;
-    associate-label(fun_body, name, "Var");
+    set(cur(), resolveVar(name), fun_body);
     eval-let-binds(tail)
   
-  func-return:: val -> return
   func-return(val) =
-    rcf <- getCF(curCF(), $ret);
-    push(val, rcf);
-    returnCF(rcf)
-  associate-args:: ast -> instr
+    rcf <- getC(curCF(), $ret);
+    callC(rcf, val)
+    
   associate-args( (idx, FArg(name, _)) ) =
     associate-index(idx, name, "Var")
     

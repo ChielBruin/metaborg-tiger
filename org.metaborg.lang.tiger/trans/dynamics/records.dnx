@@ -8,16 +8,14 @@ rules
     store-field(zip-with-index(vals), rec);
     return(rec)
     
-  
-  store-field:: ast -> val -> instr
-  store-field([], _) = continue()
+  store-field([], _) = nop()
   
   store-field( [(idx, InitField(name, exp)) | t ], frame ) =
     val <- eval-exp(exp);
     set(frame, [idx], val);
     associate-index(idx, name, "Field");
     store-field(t, frame)
-    
+  
   eval-exp(FieldVar(record, slot)) =
     rec <- eval-exp(record);
     s <- new(int(0));

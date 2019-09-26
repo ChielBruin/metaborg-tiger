@@ -23,7 +23,6 @@ rules
 
 rules
   // The size of an array is not constant, so we cannot solve this using meta-arithmetic
-  init-array:: val -> val -> ast -> instr
   init-array(array, size, exp) =
     idx <- int(0);
     jump(INIT);

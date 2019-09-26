@@ -12,14 +12,16 @@ let
 
     function printboard() =
       (
+        print(" O");
         for i := 0 to N-1
         do (
-              for j := 0 to N-1 
-              do
-                print(if col[i]=j then " O" else " .");
-                print("\n")
-        	   );
-        	   print("\n"))
+          for j := 0 to N-1 
+          do
+            print(if col[i]=j then " O" else " .");
+            print("\n")
+        );
+        print("\n")
+      )
 
     function try(c:int) =
       (
@@ -27,7 +29,7 @@ let
         then printboard()
         else
           for r := 0 to N-1
-          do
+          do 
             if row[r]=0 & diag1[r+c]=0 & diag2[r+7-c]=0
             then
               (
@@ -37,7 +39,7 @@ let
 		            row[r]:=0;
 		            diag1[r+c]:=0;
 		            diag2[r+7-c]:=0
-		          )
+		      )
        )
 in
   try(0)

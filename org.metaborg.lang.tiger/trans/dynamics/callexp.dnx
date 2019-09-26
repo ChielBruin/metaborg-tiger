@@ -11,16 +11,17 @@ rules
   eval-unit-exp(Call("print", [arg])) =
     v1 <- eval-exp(arg);
     // TODO: This should print strings, not chars
-    printc(v1);
-    printc(int(10)) // Newline
-    
+    printc(v1)
+  
   eval-exp(Call(name, args)) =
     callFrame <- new(int(length(args)));
     store-args(zip-with-index(args), callFrame);
     link(callFrame, get(cur(), resolve-scope(name, "Var")), &P);
-    callCF <- newCF(callFrame, resolve-label(name, "Var"), int(1));
-    setCF(callCF, $ret, curCF());
-    callCF(callCF);
+    block <- get(cur(), resolve(name, "Var"));
+    callCF <- newCF(callFrame, block, int(1));
+    setC(callCF, $ret, curC(CONT));
+    callCF(callCF, block);
+   CONT;
     return(pop(curCF()))
   
     
@@ -28,12 +29,13 @@ rules
     callFrame <- new(int(length(args)));
     store-args(zip-with-index(args), callFrame);
     link(callFrame, get(cur(), resolve-scope(name, "Var")), &P);
-    callCF <- newCF(callFrame, resolve-label(name, "Var"), int(1));
-    setCF(callCF, $ret, curCF());
-    callCF(callCF)
+    block <- get(cur(), resolve(name, "Var"));
+    callCF <- newCF(callFrame, block, int(1));
+    setC(callCF, $ret, curC(CONT));
+    callCF(callCF, block);
+   CONT
   
-  store-args:: ast -> val -> instr
-  store-args([], _) = continue()
+  store-args([], _) = nop()
   
   store-args( [(idx, exp) | t ], frame ) =
     val <- eval-exp(exp);

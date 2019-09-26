@@ -40,3 +40,15 @@ let
    inc(inc(inc(2))) 
 end
 ]] run dnx-run-spt to "5"
+
+test Call function multiple times within a function [[
+let
+  function func() : int = (
+    func();
+    func();
+    9
+  )
+in
+  func()
+end
+]] run dnx-run-spt to "9"

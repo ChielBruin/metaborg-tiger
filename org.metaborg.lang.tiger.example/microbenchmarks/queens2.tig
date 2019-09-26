@@ -1,13 +1,13 @@
 //https://github.com/smarr/are-we-fast-yet/blob/master/benchmarks/Java/src/Queens.java
-for i := 0 to 30
+for i := 0 to 1
 do
   (
-  timeGo();
+//  timeGo();
   let
     type intArray = array of int
   in
     let
-      function queens():int =
+      function queens() =
         let
           var freeRows : intArray := intArray[ 8] of  1
           var freeMaxs : intArray := intArray[16] of  1

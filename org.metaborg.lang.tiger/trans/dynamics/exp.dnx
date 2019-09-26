@@ -11,8 +11,7 @@ rules
   
   eval-exp(Seq(list)) =
     return(eval-seq(list))
-    
-  eval-seq:: ast -> val
+  
   eval-seq([h]) = 
     v1 <- eval-exp(h);
     return(v1)
@@ -22,12 +21,11 @@ rules
   eval-seq([h | t]) = 
     v1 <- eval-exp(h);
     return(eval-seq(t))
-    
+  
   
   eval-unit-exp(Seq(list)) =
     eval-unit-seq(list)
-    
-  eval-unit-seq:: ast -> instr
+  
   eval-unit-seq([h]) = 
     eval-unit-exp(h)
   

@@ -21,15 +21,22 @@ signature
   namespaces
     Var
     Field
+    Loop
    
+//library
+//  int-to-string = 
+//    <
+//      // some code
+//    >
+    
 rules
-  eval:: ast -> instr
+//  eval:: ast -> instr
   eval(Mod(exp)) =
    eval-instr(exp);
-   exitOK()  
+   exitOK()
    
-  eval-instr:: ast -> instr
+//  eval-instr:: ast -> instr
   eval-instr(exp:UNIT()) = eval-unit-exp(exp)
-  eval-instr(exp) = 
+  eval-instr(exp:INT()) = 
     v1 <- eval-exp(exp);
     printc(iadd(int(48), v1))

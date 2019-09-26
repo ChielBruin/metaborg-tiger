@@ -11,6 +11,18 @@ rules
     jump(CONT);
    CONT
    
+// IF:: val-> instr-> instr -> instr
+// IF(c, then, else) =
+//   jumpz(c, ELSE, THEN);
+//   THEN;
+////     then;
+//     jump(CONT);
+//   ELSE;
+////     else;
+//     jump(CONT);
+//   CONT
+     
+   
   eval-unit-exp(If(cond, then, else):UNIT()) = 
     c <- eval-exp(cond);
     jumpz(c, ELSE, THEN);
@@ -35,13 +47,13 @@ rules
     return(v1)
     
   eval-unit-exp(stmt@For(Var(idx_var), init, cond, body)) =
-    associate-label(FOR_END, "__break__"@stmt, "Loop");
     vi <- eval-exp(init);
     max <- eval-exp(cond);
-    scope <- new(int(1));
+    scope <- new(int(2));
     link(scope, [], &P);
     mkcur(scope);
-    idx_path <- resolveVar(idx_var);
+    set(cur(), resolve("__break__"@stmt, "Loop"), FOR_END);
+    idx_path = resolveVar(idx_var);
     set(cur(), idx_path, vi);
     jump(FOR);
    FOR;
@@ -57,15 +69,16 @@ rules
     mkcur(get(cur(), [&P]))
     
   eval-unit-exp(stmt@While(cond, body)) =
-    associate-label(WHILE_BREAK, "__break__"@stmt, "Loop");
+    break_path = resolve("__break__"@stmt, "Loop");
     jump(WHILE);
    WHILE;
     c <- eval-exp(cond);
     jumpz(c, WHILE_END, WHILE_BODY);
    WHILE_BODY;
-    scope <- new(int(0));
+    scope <- new(int(1));
     link(scope, [], &P);
     mkcur(scope);
+    set(cur(), break_path , WHILE_BREAK);
     
     eval-unit-exp(body);
     
@@ -77,9 +90,9 @@ rules
    WHILE_END
     
   eval-unit-exp(b@Break()) =
-    break <- "__break__"@b;
-    path <- resolve-scope(break, "Loop");
+    break = "__break__"@b;
+    path = resolve-scope(break, "Loop");
     mkcur(get(cur(), path));
-    jump(resolve-label(break, "Loop"));
-    DEAD_CODE
+    jump(get(cur(), resolve(break, "Loop")));
+   DEAD_CODE
 

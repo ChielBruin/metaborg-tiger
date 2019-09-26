@@ -13,7 +13,7 @@ dependencies:
   - org.metaborg:org.metaborg.meta.nabl2.shared:${metaborgVersion}
   - org.metaborg:org.metaborg.meta.nabl2.runtime:${metaborgVersion}
   - org.metaborg:lang.dynamix:0.1.0-SNAPSHOT
-  - org.metaborg.lang:framevm:1.1.0
+  - org.metaborg.lang:framevm:1.2.0
 pardonedLanguages:
 - EditorService
 - Stratego-Sugar
