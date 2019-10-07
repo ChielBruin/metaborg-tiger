@@ -1,6 +1,6 @@
 module callexp
 
-imports common
+imports dnx-lib
 
 rules
   eval-exp(Call("chr", [arg])) =
@@ -8,36 +8,13 @@ rules
     // TODO: This should return a string, not a char
     return(iadd(int(48), v1))
     
-  eval-unit-exp(Call("print", [arg])) =
+  eval-exp(Call("print", [arg])) =
     v1 <- eval-exp(arg);
     // TODO: This should print strings, not chars
-    printc(v1)
+    printc(v1);
+    return(null())
   
   eval-exp(Call(name, args)) =
-    callFrame <- new(int(length(args)));
-    store-args(zip-with-index(args), callFrame);
-    link(callFrame, get(cur(), resolve-scope(name, "Var")), &P);
-    block <- get(cur(), resolve(name, "Var"));
-    callCF <- newCF(callFrame, block, int(1));
-    setC(callCF, $ret, curC(CONT));
-    callCF(callCF, block);
+    call-function[eval-exp]((name, "Var"), args, $ret, CONT);
    CONT;
-    return(pop())
-  
-    
-  eval-unit-exp(Call(name, args)) =
-    callFrame <- new(int(length(args)));
-    store-args(zip-with-index(args), callFrame);
-    link(callFrame, get(cur(), resolve-scope(name, "Var")), &P);
-    block <- get(cur(), resolve(name, "Var"));
-    callCF <- newCF(callFrame, block, int(1));
-    setC(callCF, $ret, curC(CONT));
-    callCF(callCF, block);
-   CONT
-  
-  store-args([], _) = nop()
-  
-  store-args( [(idx, exp) | t ], frame ) =
-    val <- eval-exp(exp);
-    set(frame, [idx], val);
-    store-args(t, frame)  
+    return(get-returned-value())

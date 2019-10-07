@@ -1,7 +1,5 @@
 module binexp
- 
-imports common
- 
+
 rules 
   eval-exp(Plus(left, right)) = 
     v1 <- eval-exp(left);

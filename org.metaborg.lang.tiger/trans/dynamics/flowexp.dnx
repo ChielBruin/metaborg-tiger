@@ -1,38 +1,16 @@
 module flowexp
 
-imports common
+imports dnx-lib
 
 rules
-  eval-unit-exp(IfThen(cond, then):UNIT()) = 
+  eval-exp(IfThen(cond, then)) = 
     c <- eval-exp(cond);
     jumpz(c, CONT, THEN);
    THEN;
-    eval-unit-exp(then);
+    v1 <- eval-exp(then);
     jump(CONT);
-   CONT
-   
-// IF:: val-> instr-> instr -> instr
-// IF(c, then, else) =
-//   jumpz(c, ELSE, THEN);
-//   THEN;
-////     then;
-//     jump(CONT);
-//   ELSE;
-////     else;
-//     jump(CONT);
-//   CONT
-     
-   
-  eval-unit-exp(If(cond, then, else):UNIT()) = 
-    c <- eval-exp(cond);
-    jumpz(c, ELSE, THEN);
-   THEN;
-    eval-unit-exp(then);
-    jump(CONT);
-   ELSE;
-    eval-unit-exp(else);
-    jump(CONT);
-   CONT
+   CONT;
+    return(null())
     
   eval-exp(If(cond, then, else)) = 
     c <- eval-exp(cond);
@@ -46,29 +24,30 @@ rules
    CONT;
     return(v1)
     
-  eval-unit-exp(stmt@For(Var(idx_var), init, cond, body)) =
+  eval-exp(stmt@For(Var(idx_var), init, cond, body)) =
     vi <- eval-exp(init);
     max <- eval-exp(cond);
     scope <- new(int(2));
     link(scope, [], &P);
     mkcur(scope);
     set(cur(), resolve("__break__"@stmt, "Loop"), FOR_END);
-    idx_path = resolveVar(idx_var);
+    idx_path = resolve(idx_var, "Var");
     set(cur(), idx_path, vi);
     jump(FOR);
    FOR;
     cur <- get(cur(), idx_path);
     jumpz(igt(cur, max), FOR_BODY, FOR_END);
    FOR_BODY;
-    eval-unit-exp(body);
+    v1 <- eval-exp(body);
     
     // increment loop index
     set(cur(), idx_path, iadd(get(cur(), idx_path), int(1)));
     jump(FOR);
    FOR_END;
-    mkcur(get(cur(), [&P]))
+    mkcur(get(cur(), [&P]));
+    return(null())
     
-  eval-unit-exp(stmt@While(cond, body)) =
+  eval-exp(stmt@While(cond, body)) =
     break_path = resolve("__break__"@stmt, "Loop");
     jump(WHILE);
    WHILE;
@@ -80,19 +59,22 @@ rules
     mkcur(scope);
     set(cur(), break_path , WHILE_BREAK);
     
-    eval-unit-exp(body);
+    v1 <- eval-exp(body);
     
     mkcur(get(cur(), [&P]));
     jump(WHILE);
    WHILE_BREAK;
     mkcur(get(cur(), [&P]));
     jump(WHILE_END);
-   WHILE_END
+   WHILE_END;
+    return(null())
     
-  eval-unit-exp(b@Break()) =
+  eval-exp(b@Break()) =
     break = "__break__"@b;
     path = resolve-scope(break, "Loop");
     mkcur(get(cur(), path));
     jump(get(cur(), resolve(break, "Loop")));
-   DEAD_CODE
+   DEAD_CODE;
+    // TODO: this should be nicer
+    return(null())
 

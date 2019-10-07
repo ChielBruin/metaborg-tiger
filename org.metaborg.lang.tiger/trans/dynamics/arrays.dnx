@@ -1,38 +1,21 @@
 module arrays
 
-imports common
+imports dnx-lib
 
 rules
   eval-exp(Array(_, size, init_val)) =
     s <- eval-exp(size);
-    arr <- new(s);
-    init-array(arr, s, init_val);
-    
+    arr <- create-default-array[eval-exp](s, init_val);
     return(arr)
+  
+  eval-exp(Subscript(a, i)) =
+    array <- eval-exp(a);
+    index <- eval-exp(i);
+    return(array-get-index(array, index))
     
-  eval-exp(Subscript(arr, idx)) =
-    frame <- eval-exp(arr);
-    index <- eval-exp(idx);
-    return(get(frame, index))
-    
-  eval-unit-exp(Assign(Subscript(array, index), value)) = 
+  eval-exp(Assign(Subscript(array, index), value)) = 
     idx <- eval-exp(index);
     arr <- eval-exp(array);
     val <- eval-exp(value);
-    set(arr, idx, val)
-
-rules
-  // The size of an array is not constant, so we cannot solve this using meta-arithmetic
-  init-array(array, size, exp) =
-    idx <- int(0);
-    jump(INIT);
-   INIT;
-    jumpz(ieq(idx, size), INIT_LOOP, INIT_END);
-   INIT_LOOP;
-    val <- eval-exp(exp);
-    set(array, idx, val);
-    idx <- iadd(idx, int(1));
-    jump(INIT);
-   INIT_END
-   
-  
+    array-set-index(arr, idx, val);
+    return(null())

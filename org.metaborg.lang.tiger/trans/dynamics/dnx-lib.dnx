@@ -1,0 +1,112 @@
+module dnx-lib
+   
+rules	// General utility
+  map[x]([]) =
+    nop()
+    
+  map[x]([h|t]) =
+    x(h);
+    map[x](t)
+
+  zip-with-index(list) =
+    zip--with--index(list, 0)
+  
+  zip--with--index([], idx) = []
+  zip--with--index([h | t], idx) =
+    tail = zip--with--index(t, idx + 1);
+    [(idx, h) | tail]
+    
+  frame-store[x]([], _) = nop()
+  frame-store[x]( [(idx, exp) | t ], frame ) =
+    val <- x(exp);
+    set(frame, [idx], val);
+    frame-store[x](t, frame) 
+    
+  record-store[x]([], _, _) = nop()
+  record-store[x]( [(idx, (name, exp)) | t ], frame, ns ) =
+    val <- x(exp);
+    set(frame, [idx], val);
+    associate-index(idx, name, ns);
+    record-store[x](t, frame, ns)  
+
+rules // Variables
+  variable-get(name, ns) =
+    return(get(cur(), resolve(name, ns)))
+  
+  variable-assign(name, ns, value) =
+    set(cur(), resolve(name, ns), value)
+
+rules // Exitcodes
+  exitOK() = 
+    rcf <- getC(curCF(), $ret);
+    callC(rcf, int(0))
+  
+  exitWith(code) = 
+    rcf <- getC(curCF(), $ret);
+    callC(rcf, code)
+  
+rules  // Arrays
+  array-set-index(array, index, value) =
+    return(set(array, index, value))
+  
+  array-get-index(array, index) = 
+    return(get(array, index))
+    
+  create-default-array[x](size, default_val) = 
+    array <- new(size);
+    init--array[x](array, size, default_val);
+    return(array)
+    
+  // The size of an array is not constant, so we cannot solve this using meta-arithmetic
+  init--array[x](array, size, exp) =
+    idx <- int(0);
+    jump(INIT);
+   INIT;
+    jumpz(ieq(idx, size), INIT_LOOP, INIT_END);
+   INIT_LOOP;
+    val <- x(exp);
+    set(array, idx, val);
+    idx <- iadd(idx, int(1));
+    jump(INIT);
+   INIT_END
+   
+rules // Functions
+  call-function[x]((name, ns), args, ret_c, ret_lbl) =
+    callFrame <- new(int(length(args)));
+    frame-store[x](zip-with-index(args), callFrame);
+    link(callFrame, get(cur(), resolve-scope(name, ns)), &P);
+    block <- get(cur(), resolve(name, ns));
+    callCF <- newCF(callFrame, block, int(1));
+    setC(callCF, ret_c, curC(ret_lbl));
+    callCF(callCF, block)
+    
+  func-return(val, cont) =
+    rcf <- getC(curCF(), cont);
+    callC(rcf, val)
+  
+  get-returned-value() =
+    return(pop())
+    
+rules // Scoping
+  scope-new(size) =
+    scope <- new(size);
+    link(scope, [], &P);
+    mkcur(scope)
+    
+rules // Records
+  create-record[x, y](values, field_ns) = 
+    rec <- new(int(length(values)));
+    record-store[x](zip-with-index(map[y](values)), rec, field_ns);
+    return(rec)
+    
+  record-get-field(rec, name, ns) = 
+    s <- new(int(0));
+    link(s, rec, &I);
+    val <- get(s, resolve(name, ns));
+    return(val)
+    
+  record-set-field(rec, name, ns, val) = 
+    s <- new(int(0));
+    link(s, rec, &I);
+    set(s, resolve(name, ns), val)
+   

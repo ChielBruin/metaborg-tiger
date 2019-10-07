@@ -1,7 +1,5 @@
 module strings
 
-imports common
-
 rules
   eval-exp(String("\" O\"")) = int(43)
   eval-exp(String("\" .\"")) = int(32)

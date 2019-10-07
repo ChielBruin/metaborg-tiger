@@ -1,34 +1,22 @@
 module records
 
-imports common
+imports dnx-lib
 
 rules
   eval-exp(Record(_, vals)) =
-    rec <- new(int(length(vals)));
-    store-field(zip-with-index(vals), rec);
-    return(rec)
+    return(create-record[eval-exp, unpack-field-decls](vals, "Field"))
     
-  store-field([], _) = nop()
-  
-  store-field( [(idx, InitField(name, exp)) | t ], frame ) =
-    val <- eval-exp(exp);
-    set(frame, [idx], val);
-    associate-index(idx, name, "Field");
-    store-field(t, frame)
-  
-  eval-exp(FieldVar(record, slot)) =
+  eval-exp(FieldVar(record, name)) =
     rec <- eval-exp(record);
-    s <- new(int(0));
-    link(s, rec, &I);
-    val <- get(s, resolve(slot, "Field"));
-    return(val)
+    return(record-get-field(rec, name, "Field"))
   
-  // TODO: This is not a proper NULL
-  eval-exp(NilExp()) = return(new(int(0)))
+  eval-exp(NilExp()) = return(null())
   
-  eval-unit-exp(Assign(FieldVar(f, name), exp)) =
+  eval-exp(Assign(FieldVar(f, name), exp)) =
     v1 <- eval-exp(exp);
     rec <- eval-exp(f);
-    s <- new(int(0));
-    link(s, rec, &I);
-    set(s, resolve(name, "Field"), v1)
+    record-set-field(rec, name, "Field", v1);
+    return(null())
+
+rules
+  unpack-field-decls(InitField(name, exp)) = (name, exp)

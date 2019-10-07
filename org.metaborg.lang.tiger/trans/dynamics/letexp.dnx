@@ -1,6 +1,6 @@
 module letexp
 
-imports common
+imports dnx-lib
 
 rules
   eval-exp(Let(binds, body)) =
@@ -9,95 +9,51 @@ rules
     res <- eval-let-body(body);
     mkcur(old_s);
     return(res)
-  
-  eval-unit-exp(Let(binds, body)) =
-    old_s <- cur();
-    eval-let-binds(binds);
-    eval-let-body-unit(body);
-    mkcur(old_s)
-       
+ 
 // Let internal rules
 rules // Let body
   eval-let-body([exp]) =
     v1 <- eval-exp(exp);
     return(v1)
       
-  eval-let-body([exp:UNIT() | tail]) =
-    eval-unit-exp(exp);
-    return(eval-let-body(tail))
-    
   eval-let-body([exp | tail]) =
     v1 <- eval-exp(exp);
     return(eval-let-body(tail))
-    
-  eval-let-body-unit([exp]) =
-    eval-unit-exp(exp)
-      
-  eval-let-body-unit([exp:UNIT() | tail]) =
-    eval-unit-exp(exp);
-    eval-let-body-unit(tail)
-      
-  eval-let-body-unit([exp | tail]) =
-    v1 <- eval-exp(exp);
-    eval-let-body-unit(tail)
 
 rules // Let bindings
   eval-let-binds([]) = 
     nop()
     
   eval-let-binds([FunDecs(funcs) | tail]) =
-    scope <- new(int(length(funcs)));
-    link(scope, [], &P);
-    mkcur(scope);
+    scope-new(int(length(funcs)));
     eval-let-binds(funcs);
     eval-let-binds(tail)
     
   eval-let-binds([FunDec(name, args, _, body) | tail]) =
-    q = zip-with-index(args);
-    map[associate-args](q);
-    fun_body = <
-      v13 <- eval-exp(~body);
-      func-return(v13)
-    >;
-    set(cur(), resolveVar(name), fun_body);
-    eval-let-binds(tail)
+    eval-let-binds([ProcDec(name, args, body) | tail])
     
   eval-let-binds([ProcDec(name, args, body) | tail]) =
     q = zip-with-index(args);
     map[associate-args](q);
     fun_body = <
-      eval-unit-exp(~body);
-      rcf <- getC(curCF(), $ret);
-      callC(rcf)
+      v1 <-eval-exp(~body);
+      func-return(v1, $ret)
     >;
-    set(cur(), resolveVar(name), fun_body);
+    variable-assign(name, "Var", fun_body);
     eval-let-binds(tail)
-  
-  func-return(val) =
-    rcf <- getC(curCF(), $ret);
-    callC(rcf, val)
     
   associate-args( (idx, FArg(name, _)) ) =
     associate-index(idx, name, "Var")
     
   eval-let-binds([VarDec(name, _, val) | tail]) = 
-    v1 <- eval-exp(val);
-    scope <- new(int(1));
-    link(scope, [], &P);
-    mkcur(scope);
-    set(scope, resolveVar(name), v1);
-    eval-let-binds(tail)
+    eval-let-binds([VarDecNoType(name, val) | tail])
     
   eval-let-binds([VarDecNoType(name, val) | tail]) = 
     v1 <- eval-exp(val);
-    scope <- new(int(1));
-    link(scope, [], &P);
-    mkcur(scope);
-    set(scope, resolveVar(name), v1);
+    scope-new(int(1));
+    variable-assign(name, "Var", v1);
     eval-let-binds(tail)
     
   eval-let-binds([TypeDecs(_) | tail]) = 
-    scope <- new(int(0));
-    link(scope, [], &P);
-    mkcur(scope);
+    scope-new(int(0));
     eval-let-binds(tail)

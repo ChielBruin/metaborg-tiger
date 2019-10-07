@@ -1,41 +1,34 @@
 module exp
 
-imports common
+imports dnx-lib
 
 rules
   eval-exp(Int(v)) = return(int(v))
   
   eval-exp(Uminus(exp)) = return(ineg(eval-exp(exp)))
   
-  eval-exp(Var(name)) = return(get(cur(), resolveVar(name)))
+  eval-exp(Var(name)) = return(variable-get(name, "Var"))
   
   eval-exp(Seq(list)) =
     return(eval-seq(list))
-  
+    
+  eval-exp(Assign(Var(var), exp)) =
+    v1 <- eval-exp(exp);
+    variable-assign(var, "Var", v1);
+    return(null())
+    
+rules // Sequence internal rules
+  eval-seq([]) = 
+    return(null())
+    
   eval-seq([h]) = 
     v1 <- eval-exp(h);
     return(v1)
-  eval-seq([h:UNIT() | t]) = 
-    eval-unit-exp(h);
-    return(eval-seq(t))
+    
   eval-seq([h | t]) = 
     v1 <- eval-exp(h);
     return(eval-seq(t))
   
-  
-  eval-unit-exp(Seq(list)) =
-    eval-unit-seq(list)
-  
-  eval-unit-seq([h]) = 
-    eval-unit-exp(h)
-  
-  eval-unit-seq([h:UNIT() | t]) = 
-    eval-unit-exp(h);
-    eval-unit-seq(t)
-  eval-unit-seq([h | t]) = 
+  eval-seq([h | t]) = 
     v1 <- eval-exp(h);
-    eval-unit-seq(t)
- 
-  eval-unit-exp(Assign(Var(var), exp)) =
-    v1 <- eval-exp(exp);
-    set(cur(), resolveVar(var), v1)
+    return(eval-seq(t))
