@@ -22,7 +22,7 @@ rules
     setC(callCF, $ret, curC(CONT));
     callCF(callCF, block);
    CONT;
-    return(pop(curCF()))
+    return(pop())
   
     
   eval-unit-exp(Call(name, args)) =
