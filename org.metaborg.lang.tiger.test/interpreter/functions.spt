@@ -1,4 +1,4 @@
-module interpreter/integer
+module interpreter/functions
 
 language Tiger
 
@@ -41,14 +41,29 @@ let
 end
 ]] run dnx-run-spt to "5"
 
+
 test Call function multiple times within a function [[
 let
   function func() : int = (
-    func();
-    func();
-    9
+    func2() + func2()
+  )
+  function func2() : int = (
+  	2
   )
 in
   func()
 end
-]] run dnx-run-spt to "9"
+]] run dnx-run-spt to "4"
+
+test Two functions [[
+let
+  function func() : int = (
+    3
+  )
+  function func2() : int = (
+  	2
+  )
+in
+  func() + func2()
+end
+]] run dnx-run-spt to "5"

@@ -1,4 +1,4 @@
-module interpreter/integer
+module interpreter/flow
 
 language Tiger
 
