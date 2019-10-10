@@ -19,7 +19,7 @@ test nested if else [[
 
 // While statements:
 
-test simple if then [[
+test simple while [[
 let
   var c : int := 0
 in (
