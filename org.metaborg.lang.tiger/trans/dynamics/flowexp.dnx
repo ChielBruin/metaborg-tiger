@@ -60,7 +60,7 @@ rules
     
     w_cond = <
       c <- eval-exp(~cond);
-      jumpz(c, ~w_cond, ~w_body)
+      jumpz(c, ~k, ~w_body)
     >;
     w_body = <
       scope <- new(int(1));
