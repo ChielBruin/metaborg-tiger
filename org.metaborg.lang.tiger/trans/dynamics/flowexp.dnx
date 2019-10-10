@@ -3,78 +3,89 @@ module flowexp
 imports dnx-lib
 
 rules
-  eval-exp(IfThen(cond, then)) = 
-    c <- eval-exp(cond);
-    jumpz(c, CONT, THEN);
-   THEN;
-    v1 <- eval-exp(then);
-    jump(CONT);
-   CONT;
-    return(null())
+  eval-exp(IfThen(cond, then)); k(null()) = 
+   then_b = <
+      v1 <- eval-exp(~then);
+      jump(~k)
+    >;
     
-  eval-exp(If(cond, then, else)) = 
     c <- eval-exp(cond);
-    jumpz(c, ELSE, THEN);
-   THEN;
-    v1 <- eval-exp(then);
-    jump(CONT);
-   ELSE;
-    v1 <- eval-exp(else);
-    jump(CONT);
-   CONT;
-    return(v1)
+    jumpz(c, k, then_b)
+  
+  eval-exp(If(cond, then, else)); k(v1) =
+    !v1;
     
-  eval-exp(stmt@For(Var(idx_var), init, cond, body)) =
+    c <- eval-exp(cond);
+    jumpz(c, else_b, then_b);
+    
+    then_b = <
+      ~v1 <- eval-exp(~then);
+      jump(~k)
+    >;
+    else_b = <
+      ~v1 <- eval-exp(~else);
+      jump(~k)
+    >
+    
+  eval-exp(stmt@For(Var(idx_var), init, cond, body)); k(null()) =
+    idx_path = resolve(idx_var, "Var");
+    break_path = resolve("__break__"@stmt, "Loop");
+    !max;
+    f_body = <
+      v1 <- eval-exp(~body);
+      // increment loop index
+      set(cur(), ~idx_path, iadd(get(cur(), ~idx_path), int(1)));
+      jump(~f_check)
+    >;
+    f_end = <
+      mkcur(get(cur(), [&P]));
+      jump(~k)
+    >;
+    f_check = <
+      cur <- get(cur(), ~idx_path);
+      jumpz(igt(cur, ~max), ~f_body, ~f_end)
+    >;
+
     vi <- eval-exp(init);
     max <- eval-exp(cond);
     scope <- new(int(2));
     link(scope, [], &P);
     mkcur(scope);
-    set(cur(), resolve("__break__"@stmt, "Loop"), FOR_END);
-    idx_path = resolve(idx_var, "Var");
+    set(cur(), break_path, f_end);
     set(cur(), idx_path, vi);
-    jump(FOR);
-   FOR;
-    cur <- get(cur(), idx_path);
-    jumpz(igt(cur, max), FOR_BODY, FOR_END);
-   FOR_BODY;
-    v1 <- eval-exp(body);
+    jump(f_check)
     
-    // increment loop index
-    set(cur(), idx_path, iadd(get(cur(), idx_path), int(1)));
-    jump(FOR);
-   FOR_END;
-    mkcur(get(cur(), [&P]));
-    return(null())
-    
-  eval-exp(stmt@While(cond, body)) =
+  eval-exp(stmt@While(cond, body)); k(null()) =
     break_path = resolve("__break__"@stmt, "Loop");
-    jump(WHILE);
-   WHILE;
-    c <- eval-exp(cond);
-    jumpz(c, WHILE_END, WHILE_BODY);
-   WHILE_BODY;
-    scope <- new(int(1));
-    link(scope, [], &P);
-    mkcur(scope);
-    set(cur(), break_path , WHILE_BREAK);
     
-    v1 <- eval-exp(body);
+    w_cond = <
+      c <- eval-exp(~cond);
+      jumpz(c, ~w_cond, ~w_body)
+    >;
+    w_body = <
+      scope <- new(int(1));
+      link(scope, [], &P);
     
-    mkcur(get(cur(), [&P]));
-    jump(WHILE);
-   WHILE_BREAK;
-    mkcur(get(cur(), [&P]));
-    jump(WHILE_END);
-   WHILE_END;
-    return(null())
+      mkcur(scope);
+      set(cur(), ~break_path , ~w_break);
     
-  eval-exp(b@Break()) =
+      v1 <- eval-exp(~body);
+    
+      mkcur(get(cur(), [&P]));
+      jump(~w_cond)
+    >;
+    w_break = <
+      mkcur(get(cur(), [&P]));
+      jump(~k)
+    >;
+    
+   jump(w_cond)
+   
+    
+  eval-exp(b@Break()); k(null()) =
     break = "__break__"@b;
     path = resolve-scope(break, "Loop");
+    
     mkcur(get(cur(), path));
-    jump(get(cur(), resolve(break, "Loop")));
-   DEAD_CODE;
-    // TODO: this should be nicer
-    return(null())
+    jump(get(cur(), resolve(break, "Loop")))
 

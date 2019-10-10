@@ -13,8 +13,6 @@ rules
     // TODO: This should print strings, not chars
     printc(v1);
     return(null())
-  
-  eval-exp(Call(name, args)) =
-    call-function[eval-exp]((name, "Var"), args, $ret, CONT);
-   CONT;
-    return(get-returned-value())
+
+  eval-exp(Call(name, args)); k(get-returned-value()) =
+    call-function[eval-exp]((name, "Var"), args, $ret, k)

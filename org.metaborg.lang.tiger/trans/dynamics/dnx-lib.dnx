@@ -58,18 +58,21 @@ rules  // Arrays
     return(array)
     
   // The size of an array is not constant, so we cannot solve this using meta-arithmetic
-  init--array[x](array, size, exp) =
+  init--array[x](array, size, exp); k =
     idx <- int(0);
-    jump(INIT);
-   INIT;
-    jumpz(ieq(idx, size), INIT_LOOP, INIT_END);
-   INIT_LOOP;
-    val <- x(exp);
-    set(array, idx, val);
-    idx <- iadd(idx, int(1));
-    jump(INIT);
-   INIT_END
-   
+    jump(init);
+    
+    !idx;
+    init = <
+      jumpz(ieq(~idx, ~size), ~loop, ~k)
+    >;
+    loop = <
+      val <- ~x(~exp);
+      set(~array, ~idx, val);
+      ~idx <- iadd(~idx, int(1));
+      jump(~init)
+    >
+
 rules // Functions
   call-function[x]((name, ns), args, ret_c, ret_lbl) =
     callFrame <- new(int(length(args)));
