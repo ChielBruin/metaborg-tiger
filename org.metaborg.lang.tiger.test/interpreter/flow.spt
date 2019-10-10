@@ -29,3 +29,75 @@ in (
   c
 ) end
 ]] run dnx-run-spt to "3"
+
+test nested while [[
+let
+  var c : int := 0
+  var p : int := 0
+in (
+  while c < 3 do (
+    p := 0;
+    while p < 3 do (
+      p := p + 1
+    );
+    c := c + 1
+  );
+  c * p
+) end
+]] run dnx-run-spt to "9"
+
+test while break [[
+let
+  var c : int := 0
+in (
+  while c < 3 do (
+    if c = 2 then break;
+    c := c + 1
+  );
+  c
+) end
+]] run dnx-run-spt to "2"
+
+
+
+
+// For loops:
+
+test for simple [[
+let
+  var c : int := 0
+in (
+  for i := 0 to 4 do (
+  	c := i
+  );
+  c
+) end
+]] run dnx-run-spt to "4"
+
+test for break [[
+let
+  var c : int := 0
+in (
+  for i := 0 to 4 do (
+    if i = 2 then break;
+  	c := i
+  );
+  c
+) end
+]] run dnx-run-spt to "1"
+
+test for nested [[
+let
+  var c : int := 0
+  var p : int := 0
+in (
+  for i:= 0 to 2 do (
+    p := 0;
+    for j:= 0 to 2 do (
+      p := p + 1
+    );
+    c := c + 1
+  );
+  c * p
+) end
+]] run dnx-run-spt to "9"
