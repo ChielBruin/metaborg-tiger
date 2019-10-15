@@ -10,6 +10,7 @@ imports
   arrays
   strings
   dnx-lib
+  dnx-stdlib
   
 signature
   link-labels
@@ -22,15 +23,70 @@ signature
     Var
     Field
     Loop
+  
+  init-size = 15
     
 rules
-  eval(Mod(exp)) =
-   eval-instr(exp);
-   exitOK()
+  eval(m@Mod(exp)) =
+    compile-builtins(m);
+    eval-instr(exp, m);
+    exitOK()
    
-  eval-instr(exp:UNIT()) = 
+  eval-instr(exp:UNIT(), _) = 
   	v1 <- eval-exp(exp)
   	
-  eval-instr(exp:INT()) = 
-    v1 <- eval-exp(exp);
-    printc(iadd(int(48), v1))
+  eval-instr(exp:INT(), m) = 
+    v1 <- eval-exp(Call("printi"@m, [exp]))
+    
+rules
+  compile-builtins(m) = 
+    compile-chr(m);
+    compile-print(m);
+    compile-print-int(m)
+    
+  compile-chr(m) =
+    chr_b = <
+    	val <- get(cur(), [0]);
+    	string <- new(int(1));
+    	set(string, [0], val);
+    	func-return(string, $ret)
+    >;
+    set(cur(), resolve("chr"@m, "Var"), chr_b)
+    
+  compile-print(m) = 
+    print_b = <
+      dnx_print <- dnx-print-string($ret);
+      cf <- newCF(cur(), int(1));
+      setC(cf, $ret, curC(~ret));
+      callCF(cf, dnx_print)
+    >;
+    ret = <
+      func-return(null(), $ret)
+    >;
+    set(cur(), resolve("print"@m, "Var"), print_b)
+    
+  compile-print-int(m) =       
+    to_string = <
+      itos <- dnx-int-to-string($ret);
+      df <- new(int(1));
+      set(df, [0], get(cur(), [0]));
+      cf <- newCF(df, int(1));
+      setC(cf, $ret, curC(~print_string));
+      callCF(cf, itos)
+    >;
+    
+    print_string = <
+      print_s <- dnx-print-string($ret);
+      string <- pop();
+      df <- new(int(1));
+      set(df, [0], string);
+      cf <- newCF(df, int(1));
+      setC(cf, $ret, curC(~ret));
+      callCF(cf, print_s)
+    >;
+    
+    ret = <
+      func-return(null(), $ret)
+    >;
+    set(cur(), resolve("printi"@m, "Var"), to_string)
+    

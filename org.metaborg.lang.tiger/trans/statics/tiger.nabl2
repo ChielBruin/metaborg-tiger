@@ -26,5 +26,11 @@ rules // top-level module
     new s.
 
   [[ m@Mod(e) ^ (s) : ty ]] :=
+     Var{"chr"@m} -> s,
+     Var{"print"@m} -> s,
+     Var{"printi"@m} -> s,
+     Var{"timeGo"@m} -> s,
+     Var{"timeStop"@m} -> s,
+     
      @m.bodyScope := s,
      [[ e ^ (s) : ty ]].

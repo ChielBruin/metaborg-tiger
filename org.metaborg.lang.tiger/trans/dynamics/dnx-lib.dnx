@@ -96,6 +96,10 @@ rules // Functions
   func-return(val, cont) =
     rcf <- getC(curCF(), cont);
     callC(rcf, val)
+    
+  func-void-return(cont) =
+    rcf <- getC(curCF(), cont);
+    callC(rcf)
   
   get-returned-value() =
     return(pop())

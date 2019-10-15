@@ -3,16 +3,6 @@ module callexp
 imports dnx-lib
 
 rules
-  eval-exp(Call("chr", [arg])) =
-    v1 <- eval-exp(arg);
-    // TODO: This should return a string, not a char
-    return(iadd(int(48), v1))
-    
-  eval-exp(Call("print", [arg])) =
-    v1 <- eval-exp(arg);
-    // TODO: This should print strings, not chars
-    printc(v1);
-    return(null())
 
   eval-exp(Call(name, args)); k(get-returned-value()) =
     call-function[eval-exp]((name, "Var"), args, $ret, k)
