@@ -8,10 +8,11 @@ imports
   statics/tiger
 
   pp
+  signatures/Strings-sig
 
 rules // Analysis
 
-  editor-analyze = nabl2-analyze(id)
+  editor-analyze = nabl2-analyze(topdown(try( (\String(s) -> String(<unquote(?'"'); unescape> s)\) )))
 
 rules // Debugging
   

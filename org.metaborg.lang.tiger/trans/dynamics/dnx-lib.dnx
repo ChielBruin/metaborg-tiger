@@ -29,6 +29,16 @@ rules	// General utility
     associate-index(idx, name, ns);
     record-store[x](t, frame, ns)  
 
+rules // Strings
+  string-to-fvm-string(str) =
+    chars = explode-string(str);
+    string <- new(length(chars));
+    frame-store[eval-char](zip-with-index(chars), string);
+    return(string)
+    
+  eval-char(char) =
+    return(int(char))
+    
 rules // Variables
   variable-get(name, ns) =
     return(get(cur(), resolve(name, ns)))
