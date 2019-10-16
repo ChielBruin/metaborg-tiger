@@ -38,7 +38,7 @@ rules	// General utility
 rules // Strings
   string-to-fvm-string(str) =
     chars = explode-string(str);
-    string <- new(length(chars));
+    string <- new(int(length(chars)));
     frame-store[eval-char](zip-with-index(chars), string);
     return(string)
     

@@ -34,9 +34,51 @@ rules
    
   eval-instr(exp:UNIT(), _) = 
   	v1 <- eval-exp(exp)
+   
+  eval-instr(exp:RECORD(_), _) = 
+  	rec <- eval-exp(exp);
+  	printc(int(36));
+  	printc(int(82));
+  	printc(int(101));
+  	printc(int(99));
+  	printc(int(111));
+  	printc(int(114));
+  	printc(int(100))
+   
+  eval-instr(exp:ARRAY(_, _), _) = 
+  	rec <- eval-exp(exp);
+  	printc(int(36));
+  	printc(int(65));
+  	printc(int(114));
+  	printc(int(114));
+  	printc(int(97));
+  	printc(int(121))
   	
+  eval-instr(exp:BOOL(), m); k = 
+    print_false = <
+  	  printc(int(102));
+  	  printc(int(97));
+  	  printc(int(108));
+  	  printc(int(115));
+  	  printc(int(101));
+      jump(~k)
+    >;
+    
+    print_true = <
+  	  printc(int(116));
+  	  printc(int(114));
+  	  printc(int(117));
+  	  printc(int(101));
+      jump(~k)
+    >;
+    b <- eval-exp(exp);
+    jumpz(b, print_false, print_true)
+    
   eval-instr(exp:INT(), m) = 
     v1 <- eval-exp(Call("printi"@m, [exp]))
+    
+  eval-instr(exp:STRING(), m) = 
+    v1 <- eval-exp(Call("print"@m, [exp]))
     
 rules
   compile-builtins(m) = 
