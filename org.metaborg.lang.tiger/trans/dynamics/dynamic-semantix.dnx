@@ -42,7 +42,23 @@ rules
   compile-builtins(m) = 
     compile-chr(m);
     compile-print(m);
-    compile-print-int(m)
+    compile-print-int(m);
+    compile-timing(m)
+    
+  compile-timing(m) =
+    tick_b = <
+    	tick();
+    	res <- null();
+    	func-return(res, $ret)
+    >;
+    set(cur(), resolve("timeGo"@m, "Var"), tick_b);
+    
+    tock_b = <
+    	tock();
+    	res <- null();
+    	func-return(res, $ret)
+    >;
+    set(cur(), resolve("timeStop"@m, "Var"), tock_b)
     
   compile-chr(m) =
     chr_b = <
