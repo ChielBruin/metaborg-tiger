@@ -1,0 +1,601 @@
+module appel
+
+language Tiger
+
+// Test cases provided by Appel
+
+test test1 [[
+let
+	type  arrtype = array of int
+	var arr1:arrtype := arrtype [10] of 0
+in
+	arr1
+end
+]] run dnx-run-spt to "$Array"
+
+test test1' [[
+let
+	type  arrtype = array of int
+	var arr1:arrtype := arrtype [10] of 0
+in
+	arr1[2]
+end
+]] run dnx-run-spt to "0"
+
+test test2 [[
+let
+	type myint = int
+	type  arrtype = array of myint
+
+	var arr1:arrtype := arrtype [10] of 0
+in
+	arr1
+end
+]] run dnx-run-spt to "$Array"
+
+test test2' [[
+let
+	type myint = int
+	type  arrtype = array of myint
+
+	var arr1:arrtype := arrtype [10] of 0
+in
+	arr1[2]
+end
+]] run dnx-run-spt to "0"
+
+
+test test3 [[
+let
+	type  rectype = {name:string, age:int}
+	var rec1:rectype := rectype {name="Nobody", age=1000}
+in
+	rec1.name := "Somebody";
+	rec1
+end
+]] run dnx-run-spt to "$Record"
+
+test test3' [[
+let
+	type  rectype = {name:string, age:int}
+	var rec1:rectype := rectype {name="Nobody", age=1000}
+in
+	rec1.name := "Somebody";
+	rec1.name
+end
+]] run dnx-run-spt to "Somebody"
+
+
+test test4 [[
+let
+/* calculate n! */
+function nfactor(n: int): int =
+		if  n = 0 
+			then 1
+			else n * nfactor(n-1)
+
+in
+	nfactor(10)
+end
+]] run dnx-run-spt to "3628800"
+
+
+test test5 [[
+let
+/* define a list */
+type intlist = {hd: int, tl: intlist} 
+
+/* define a tree */
+type tree ={key: int, children: treelist}
+type treelist = {hd: tree, tl: treelist}
+
+var lis:intlist := intlist { hd=0, tl= nil } 
+
+in
+	lis
+end
+]] run dnx-run-spt to "$Record"
+
+
+test test5' [[
+let
+/* define a list */
+type intlist = {hd: int, tl: intlist} 
+
+/* define a tree */
+type tree ={key: int, children: treelist}
+type treelist = {hd: tree, tl: treelist}
+
+var lis:intlist := intlist { hd=0, tl= nil } 
+
+in
+	lis.hd
+end
+]] run dnx-run-spt to "0"
+
+
+test test6 [[
+// This test is slightly altered to make it terminate
+let
+
+function do_nothing1(a: int, b: string)=
+		do_nothing2(a+1)
+
+function do_nothing2(d: int) =
+    if d < 5 then
+		do_nothing1(d, "str")
+
+in
+	do_nothing1(0, "str2")
+end
+]] run dnx-run-spt to ""
+
+
+test test7 [[
+// This test is slightly altered to make it terminate
+let
+function do_nothing1(a: int, b: string):int=
+		(do_nothing2(a+1);0)
+
+function do_nothing2(d: int):string =
+     if d < 5 then
+		(do_nothing1(d, "str");" ")
+     else
+        "test"
+
+in
+	do_nothing1(0, "str2")
+end
+]] run dnx-run-spt to "0"
+
+test test8 [[
+if (10 > 20) then 30 else 40
+]] run dnx-run-spt to "40"
+
+test test9 [[
+if (5>4) then 13 else  " "
+]] 1 errors
+
+test test10 [[
+while(10 > 5) do 5+6
+]] 1 errors
+
+test test11 [[
+for i:=10 to " " do 
+	i := i - 1
+]] 1 errors
+
+test test12 [[
+let
+	var a:= 0
+in 
+	for i:=0 to 100 do (a:=a+1;())
+end
+]] run dnx-run-spt to ""
+
+test test12' [[
+let
+	var a:= 0
+in 
+	for i:=0 to 100 do (a:=a+1;());
+	a
+end
+]] run dnx-run-spt to "101"
+
+test test13 [[
+3 > "df"
+]] 1 errors
+
+test test14 [[
+let
+
+	type arrtype = array of int
+	type rectype = {name:string, id: int}
+
+	var rec := rectype {name="aname", id=0}
+	var arr := arrtype [3] of 0
+
+in
+	if rec <> arr then 3 else 4
+end
+]] 1 errors
+
+test test15 [[
+if 20 then 3
+]] 1 errors
+
+test test16 [[
+let 
+
+type a=c
+type b=a
+type c=d
+type d=a
+
+in
+ ""
+end
+]] 1 errors
+
+test test17 [[
+let
+/* define a tree */
+type tree ={key: int, children: treelist}
+var d:int :=0
+type treelist = {hd: tree, tl: treelist}
+
+in
+	d
+end
+]] >1 errors
+
+test test18 [[
+let
+
+function do_nothing1(a: int, b: string):int=
+		(do_nothing2(a+1);0)
+
+var d:=0
+
+function do_nothing2(d: int):string =
+		(do_nothing1(d, "str");" ")
+
+in
+	do_nothing1(0, "str2")
+end
+]] >1 errors
+
+test test19 [[
+let
+
+function do_nothing1(a: int, b: string):int=
+		(do_nothing2(a+1);0)
+
+function do_nothing2(d: int):string =
+		(do_nothing1(a, "str");" ")
+
+in
+	do_nothing1(0, "str2")
+end
+]] >1 errors
+
+test test20 [[
+while 10 > 5 do (i+1;())
+]] >1 errors
+
+test test21 [[
+let
+
+/* calculate n! */
+function nfactor(n: int) =
+		if  n = 0 
+			then 1
+			else n * nfactor(n-1)
+
+in
+	nfactor(10)
+end
+]] >1 errors
+
+test test22 [[
+let 
+	type rectype = {name:string , id:int}
+	var rec1 := rectype {name="Name", id=0}
+in
+	rec1.nam := "asd"
+end
+]] >1 errors
+
+test test23 [[
+let 
+	type rectype = {name:string , id:int}
+	var rec1 := rectype {name="aname", id=0}
+in
+	rec1.name := 3;
+	rec1.id := "" 
+end
+]] >1 errors
+
+test test24 [[
+let 
+	var d:=0
+in
+	d[3]
+end
+]] 1 errors
+
+test test25 [[
+let 
+	var d:=0
+in
+	d.f 
+end
+]] >1 errors
+
+test test26 [[
+3 + "var"
+]] 1 errors
+
+test test27 [[
+let
+	var a:=0
+	function g(a:int):int = a 
+in
+ g(2)
+end
+]] run dnx-run-spt to "2"
+
+test test28 [[
+let
+	type rectype1 = {name:string , id:int}
+	type rectype2 = {name:string , id:int}
+
+	var rec1: rectype1 := rectype2 {name="Name", id=0}
+in
+	rec1
+end
+]] 1 errors
+
+test test29 [[
+let
+	type arrtype1 = array of int
+	type arrtype2 = array of int
+
+	var arr1: arrtype1 := arrtype2 [10] of 0
+in
+	arr1
+end
+]] 1 errors
+
+test test30 [[
+let 
+		type a = array of int
+		type b = a
+
+		var arr1:a := b [10] of 0
+in
+		arr1[2]
+end
+]] run dnx-run-spt to "0"
+
+test test31 [[
+let 
+	var a:int := " "
+in
+	a
+end
+]] 1 errors
+
+test test32 [[
+let
+	type arrayty = array of int
+
+	var a := arrayty [10] of " "
+in
+	0
+end
+]] 1 errors
+
+test test33 [[
+let
+	var a:= rectype {}
+in
+	0
+end
+]] >1 errors
+
+test test34 [[
+let
+	function g (a:int , b:string):int = a
+in
+	g("one", "two")
+end
+]] 1 errors
+
+test test35 [[
+let
+	function g (a:int , b:string):int = a
+in
+	g("one")
+end
+]] >=1 errors
+
+test test36 [[
+let
+	function g (a:int , b:string):int = a
+in
+	g(3,"one",5)
+end
+]] >=1 errors
+
+test test37 [[
+let
+	var a := 0
+	var a := " "
+in
+	0
+end
+]] run dnx-run-spt to "0"
+
+test test38 [[
+let
+	type a = int
+	type a = string
+in
+	0
+end
+]] >=1 errors
+
+test test39 [[
+let
+	function g(a:int):int = a
+	function g(a:int):int = a
+in
+	0
+end
+]] >=1 errors
+
+test test40 [[
+let
+	function g(a:int) = a
+in 
+	g(2)
+end
+]] >=1 errors
+
+test test41 [[
+let
+	type a = int
+in
+	let
+		type a = string
+	in
+		0
+	end
+end
+]] run dnx-run-spt to "0"
+
+test test42 [[
+let 
+
+type arrtype1 = array of int
+type rectype1 = {name:string, address:string, id: int , age: int}
+type arrtype2 = array of rectype1
+type rectype2 = {name : string, dates: arrtype1}
+
+type arrtype3 = array of string
+
+var arr1 := arrtype1 [10] of 0
+var arr2  := arrtype2 [5] of rectype1 {name="aname", address="somewhere", id=0, age=0}
+var arr3:arrtype3 := arrtype3 [100] of ""
+
+var rec1 := rectype1 {name="Kapoios", address="Kapou", id=02432, age=44}
+var rec2 := rectype2 {name="Allos", dates= arrtype1 [3] of 1900}
+
+in
+
+arr1[0] := 1; 
+arr1[9] := 3;
+arr2[3].name := "kati";
+arr2[1].age := 23;
+arr3[34] := "sfd";
+
+rec1.name := "sdf";
+rec2.dates[0] := 2323;
+rec2.dates[2] := 2323
+
+end
+]] run dnx-run-spt to ""
+
+test test42' [[
+let 
+
+type arrtype1 = array of int
+type rectype1 = {name:string, address:string, id: int , age: int}
+type arrtype2 = array of rectype1
+type rectype2 = {name : string, dates: arrtype1}
+
+type arrtype3 = array of string
+
+var arr1 := arrtype1 [10] of 0
+var arr2  := arrtype2 [5] of rectype1 {name="aname", address="somewhere", id=0, age=0}
+var arr3:arrtype3 := arrtype3 [100] of ""
+
+var rec1 := rectype1 {name="Kapoios", address="Kapou", id=02432, age=44}
+var rec2 := rectype2 {name="Allos", dates= arrtype1 [3] of 1900}
+
+in
+
+arr1[0] := 1; 
+arr1[9] := 3;
+arr2[3].name := "kati";
+arr2[1].age := 23;
+arr3[34] := "sfd";
+
+rec1.name := "sdf";
+rec2.dates[0] := 2323;
+rec2.dates[2] := 2323;
+rec2.dates[0]
+
+end
+]] run dnx-run-spt to "2323"
+
+test test43 [[
+let 
+	var a := ()
+in
+	a + 3
+end
+]] 1 errors
+
+test test44 [[
+let 
+
+	type rectype = {name:string, id:int}
+	var b:rectype := nil
+in
+	b := nil
+end
+]] run dnx-run-spt to ""
+
+test test44' [[
+let 
+
+	type rectype = {name:string, id:int}
+	var b:rectype := nil
+in
+	b := nil;
+	b
+end
+]] run dnx-run-spt to "$Record"
+
+test test45 [[
+let 
+	type rectype = {name:string, id:int}
+	var a:= nil
+in
+	a
+end
+]] 1 errors
+
+test test46 [[
+let 
+	type rectype = {name:string, id:int}
+	var b:rectype := nil
+in
+	b = nil;
+	b <> nil
+end
+]] run dnx-run-spt to "0"	// Not "false" according to the spec
+
+test test47 [[
+let
+	type a = int
+	var b := 4
+	type a = string
+in
+	0
+end
+]] run dnx-run-spt to "0"
+
+test test48 [[
+let
+	function g(a:int):int = a
+	type t = int
+	function g(a:int):int = a
+in
+	0
+end
+]] run dnx-run-spt to "0"
+
+
+test test49 [[
+let 
+	type rectype = {name:string, id:int}
+
+	var a:= rectype nil
+in
+	a
+end
+]] parse fails
+
