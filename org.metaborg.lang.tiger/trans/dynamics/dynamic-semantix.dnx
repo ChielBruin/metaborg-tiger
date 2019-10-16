@@ -53,26 +53,6 @@ rules
   	printc(int(114));
   	printc(int(97));
   	printc(int(121))
-  	
-  eval-instr(exp:BOOL(), m); k = 
-    print_false = <
-  	  printc(int(102));
-  	  printc(int(97));
-  	  printc(int(108));
-  	  printc(int(115));
-  	  printc(int(101));
-      jump(~k)
-    >;
-    
-    print_true = <
-  	  printc(int(116));
-  	  printc(int(114));
-  	  printc(int(117));
-  	  printc(int(101));
-      jump(~k)
-    >;
-    b <- eval-exp(exp);
-    jumpz(b, print_false, print_true)
     
   eval-instr(exp:INT(), m) = 
     v1 <- eval-exp(Call("printi"@m, [exp]))
