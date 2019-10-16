@@ -1,0 +1,96 @@
+module dnx-stdlib
+   
+rules
+  dnx-print-string(lbl) = 
+    !print_idx;
+    !print_max;
+    !string;
+    
+    print_b = <
+    	~string <- get(cur(), [0]);
+    	~print_max <- size(~string);
+    	~print_idx <- int(0);
+    	jump(~print_init)
+    >;
+    print_init = <
+        cond <- ilt(~print_idx, ~print_max);
+        jumpz(cond, ~print_end, ~print_body)
+    >;
+    print_body = <
+        val <- get(~string, ~print_idx);
+    	printc(val);
+    	~print_idx <- iadd(int(1), ~print_idx);
+		jump(~print_init)
+    >;
+    print_end = <
+    	func-void-return(~lbl)
+    >;
+    return(print_b)
+    
+  dnx-int-to-string(lbl) = 
+	!idx;
+    int-to-string = <
+      scope <- new(int(3));
+	  set(scope, [0], get(cur(), [0]));
+	  link(scope, cur(), &P);
+	  mkcur(scope);
+	  
+	  df <- new(int(1));
+	  set(df, [0], get(cur(), [0]));
+	  cf <- newCF(df, int(1));
+	  setC(cf, ~lbl, curC(~int-to-string2));
+	  callCF(cf, ~calc-length)
+	>;
+	
+	int-to-string2 = <
+	  r0 <- pop();
+	  set(cur(), [1], r0);
+	  jumpz(ilt(get(cur(), [0]), int(0)), ~pos-int-to-string, ~neg-int-to-string)
+	>;
+	
+	calc-length = <
+	  ~idx <- int(0);
+	  jump(~calc-length-comp)
+	>;
+	
+	calc-length-comp = <
+	  ~idx <- iadd(~idx, int(1));
+	  set(cur(), [0], idiv(get(cur(), [0]), int(10)));
+      jumpz(get(cur(), [0]), ~calc-length-end, ~calc-length-comp)
+	>;
+	
+	calc-length-end = <
+	  ret <- getC(curCF(), ~lbl);
+	  callC(ret, ~idx)
+	>;
+	
+	neg-int-to-string = <
+	  set(cur(), [0], ineg(get(cur(), [&P, 0])));
+	  string <- new(iadd(get(cur(), [1]), int(1)));
+	  set(string, [0], int(45));
+	  
+	  set(cur(), [2], size(string));
+	  set(cur(), [1], string);
+	  jump(~int-to-digits)
+	>;
+	
+	pos-int-to-string = <
+	  set(cur(), [0], get(cur(), [&P, 0]));
+	  string <- new(get(cur(), [1]));
+	  set(cur(), [2], size(string));
+	  set(cur(), [1], string);
+	  jump(~int-to-digits)
+	>;
+	
+	int-to-digits = <
+	  r0 <- isub(get(cur(), [2]), int(1));
+	  set(cur(), [2], r0);
+	  set(get(cur(), [1]), r0, iadd(int(48), imod(get(cur(), [0]), int(10))));
+	  set(cur(), [0], idiv(get(cur(), [0]), int(10)));
+	  jumpz(get(cur(), [0]), ~return, ~int-to-digits)
+	>;
+	return = <
+	  res <- get(cur(), [1]);
+	  func-return(res, ~lbl)
+	>;
+	return(int-to-string)
