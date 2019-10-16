@@ -2,4 +2,5 @@ module strings
 
 rules
   eval-exp(String(str)) = 
-    string <- string-to-fvm-string(str)
+    string <- string-to-fvm-string(str);
+    return(string)

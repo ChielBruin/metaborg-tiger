@@ -1,6 +1,12 @@
 module dnx-lib
    
 rules	// General utility
+  map-term[x]([]) = []
+  map-term[x]([h|t]) =
+    h' = x(h);
+    t' = map-term[x](t);
+    [h' | t']
+    
   map[x]([]) =
     nop()
     
@@ -113,7 +119,7 @@ rules // Scoping
 rules // Records
   create-record[x, y](values, field_ns) = 
     rec <- new(int(length(values)));
-    record-store[x](zip-with-index(map[y](values)), rec, field_ns);
+    record-store[x](zip-with-index(map-term[y](values)), rec, field_ns);
     return(rec)
     
   record-get-field(rec, name, ns) = 
