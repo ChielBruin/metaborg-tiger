@@ -29,11 +29,16 @@ rules	// General utility
     frame-store[x](t, frame) 
     
   record-store[x]([], _, _) = nop()
-  record-store[x]( [(idx, (name, exp)) | t ], frame, ns ) =
+  record-store[x]( [(idx, exp) | t ], frame, ns ) =
     val <- x(exp);
     set(frame, [idx], val);
-    associate-index(idx, name, ns);
     record-store[x](t, frame, ns)  
+    
+  record-store-named[x]([], _, _) = nop()
+  record-store-named[x]( [(name, exp) | t ], frame, ns ) =
+    val <- x(exp);
+    set(frame, resolve(name, ns), val);
+    record-store-named[x](t, frame, ns) 
 
 rules // Strings
   string-to-fvm-string(str) =
@@ -121,6 +126,14 @@ rules // Records
     rec <- new(int(length(values)));
     record-store[x](zip-with-index(map-term[y](values)), rec, field_ns);
     return(rec)
+    
+  create-record-named[x, y](values, field_ns) = 
+    rec <- new(int(length(values)));
+    rec_i <- new(int(0));
+    link(rec_i, rec, &I);
+    record-store-named[x](map-term[y](values), rec_i, field_ns);
+    return(rec)
+    
     
   record-get-field(rec, name, ns) = 
     s <- new(int(0));

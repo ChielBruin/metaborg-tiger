@@ -54,6 +54,6 @@ rules // Let bindings
     variable-assign(name, "Var", v1);
     eval-let-binds(tail)
     
-  eval-let-binds([TypeDecs(_) | tail]) = 
+  eval-let-binds([TypeDecs(decs) | tail]) = 
     scope-new(int(0));
     eval-let-binds(tail)

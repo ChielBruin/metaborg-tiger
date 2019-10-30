@@ -4,7 +4,7 @@ imports dnx-lib
 
 rules
   eval-exp(Record(_, vals)) =
-    return(create-record[eval-exp, unpack-field-decls](vals, "Field"))
+    return(create-record-named[eval-exp, unpack-field-decls](vals, "Field"))
     
   eval-exp(FieldVar(record, name)) =
     rec <- eval-exp(record);

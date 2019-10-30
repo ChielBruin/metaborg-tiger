@@ -1,0 +1,31 @@
+module interpreter/records
+
+language Tiger
+
+test Simple record [[
+let
+  type myrec = {x : int}
+  var rec1 : myrec := myrec{x = 1}
+in
+  rec1.x := 99;
+  rec1.x
+end
+]] run dnx-run-spt to "99"
+
+test Two fields [[
+let
+  type myrec = {x : int, y : int}
+  var rec1 : myrec := myrec{x = 1, y = 2}
+in
+  rec1.x
+end
+]] run dnx-run-spt to "1"
+
+test Two fields flipped instanciation [[
+let
+  type myrec = {x : int, y : int}
+  var rec1 : myrec := myrec{y = 1, x = 2}
+in
+  rec1.x
+end
+]] run dnx-run-spt to "2"
