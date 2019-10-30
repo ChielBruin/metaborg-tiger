@@ -104,6 +104,16 @@ rules // Functions
     setC(callCF, ret_c, curC(ret_lbl));
     callCF(callCF, block)
     
+  call-function[x]((name, ns), args, ret_c, ex_c, ret_lbl) =
+    callFrame <- new(int(length(args)));
+    frame-store[x](zip-with-index(args), callFrame);
+    link(callFrame, get(cur(), resolve-scope(name, ns)), &P);
+    block <- get(cur(), resolve(name, ns));
+    callCF <- newCF(callFrame, int(2));
+    setC(callCF, ret_c, curC(ret_lbl));
+    setC(callCF, ex_c, getC(curCF(), ex_c));
+    callCF(callCF, block)
+    
   func-return(val, cont) =
     rcf <- getC(curCF(), cont);
     callC(rcf, val)
