@@ -89,7 +89,7 @@ rules
     scope <- new(int(2));
     link(scope, [], &P);
     mkcur(scope);
-    set(cur(), break_path, f_end);
+    set(cur(), break_path, curC(f_end));
     set(cur(), idx_path, vi);
     jump(f_check)
     
@@ -105,7 +105,7 @@ rules
       link(scope, [], &P);
     
       mkcur(scope);
-      set(cur(), ~break_path , ~w_break);
+      set(cur(), ~break_path , curC(~w_break));
     
       v1 <- eval-exp(~body);
     
@@ -122,8 +122,5 @@ rules
     
   eval-exp(b@Break()); k(null()) =
     break = "__break__"@b;
-    path = resolve-scope(break, "Loop");
-    
-    mkcur(get(cur(), path));
-    jump(get(cur(), resolve(break, "Loop")))
+    callC(get(cur(), resolve(break, "Loop")))
 
