@@ -10,6 +10,8 @@ lexical restrictions
 
 lexical syntax
 
+  Id = "throw" {reject}
+  
   Id = "nil" {reject}
   Id = "let" {reject}
   Id = "in" {reject}

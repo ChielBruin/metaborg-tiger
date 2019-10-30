@@ -5,6 +5,15 @@ imports Variables
 
 context-free syntax
   
+  Exp.TryCatch = <
+    try 
+      <Exp>
+    catch <Var> in
+      <Exp>
+  >
+  
+  Exp.Throw = < throw <Exp>>
+  
   Exp.Seq = <
     ( 
       <{Exp ";\n"}*> 
