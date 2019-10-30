@@ -1,0 +1,43 @@
+module interpreter/exceptions
+
+language Tiger
+
+test safe division [[
+try (
+  42 / 0;
+  printi(12)
+) catch ex in (
+  printi(ex)
+)
+]] run dnx-run-spt to "42"
+
+test safe division 2 [[
+try (
+  42 / 1;
+  printi(12)
+) catch ex in (
+  printi(ex)
+)
+]] run dnx-run-spt to "12"
+
+test try fallthrough [[
+(
+try (
+  printi(12)
+) catch ex in (
+  printi(ex)
+);
+13
+)
+]] run dnx-run-spt to "1213"
+
+test catch fallthrough [[
+(
+try (
+  throw 42
+) catch ex in (
+  printi(ex)
+);
+13
+)
+]] run dnx-run-spt to "4213"

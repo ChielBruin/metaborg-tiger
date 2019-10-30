@@ -1,0 +1,40 @@
+
+//let
+//  var x : int := 0
+//in
+//  try (
+//    if x = 0 then 
+//      throw -1
+//    else
+//      printi(12)
+//  ) catch (ex: int) in (
+//    printi(ex)
+//  ) finally (
+//     printi(42)
+//  )
+//end
+
+//let
+//  var x : int := 1
+//in
+//  try (
+//    if x = 0 then 
+//      throw -1
+//    else
+//      printi(12)
+//  ) catch (ex: int) in (
+//    printi(ex)
+//  )
+//end
+
+
+let
+  var x : int := 1
+in
+  try (
+    42 / 0;
+    printi(12)
+  ) catch ex in (
+    printi(ex)
+  )
+end
