@@ -41,3 +41,45 @@ test catch fallthrough [[
   13
 )
 ]] run dnx-run-spt to "4213"
+
+test call function with throws [[
+let 
+  function func(n : int) =
+    throw (n + 2)
+in
+  try (
+    func(40)
+  ) catch ex in (
+    printi(ex)
+  )
+end
+]] run dnx-run-spt to "42"
+
+test nested everything [[
+let 
+  function func(n : int) =
+    throw (n + 2)
+in
+  try (
+    try (
+      func(37)
+    ) catch ex in (
+      throw (ex + 3)
+    )
+  ) catch ex in (
+     printi(ex)
+  )
+end
+]] run dnx-run-spt to "42"
+
+test break in catch [[
+for y := 1 to 5 do ( 
+  printi(y);
+  try (
+    if y > 2 then
+      throw 42
+  ) catch ex in (
+    break
+  )
+)
+]] run dnx-run-spt to "123"
