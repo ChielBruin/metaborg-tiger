@@ -5,4 +5,4 @@ imports dnx-lib
 rules
 
   eval-exp(Call(name, args)); k(get-returned-value()) =
-    call-function[eval-exp]((name, "Var"), args, $ret, k)
+    call-function[eval-exp]((name, "Var"), args, $ret, $ex, k)

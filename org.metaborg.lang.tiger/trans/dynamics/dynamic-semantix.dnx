@@ -18,6 +18,8 @@ signature
     I
   continuations
     ret
+    ex
+    next
 
   namespaces
     Var
