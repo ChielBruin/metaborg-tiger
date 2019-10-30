@@ -59,10 +59,15 @@ rules
     v2 <- eval-exp(e2);
     return(imul(v1, v2)) 
     
-  eval-exp(Divide(e1, e2)) =
+  eval-exp(Divide(e1, e2)); k(idiv(v1, v2)) =
+    !v1;
+    throw_b = <
+      callC(getC(curCF(), $ex), ~v1)
+    >;
+    
     v1 <- eval-exp(e1);
     v2 <- eval-exp(e2);
-    return(idiv(v1, v2))  
+    jumpz(ieq(v2, int(0)), k, throw_b)  
     
   eval-exp(And(e1, e2)) =
     v1 <- eval-exp(e1);
