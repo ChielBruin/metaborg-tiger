@@ -22,22 +22,22 @@ try (
 
 test try fallthrough [[
 (
-try (
-  printi(12)
-) catch ex in (
-  printi(ex)
-);
-13
+  try (
+    printi(12)
+  ) catch ex in (
+    printi(ex)
+  );
+  13
 )
 ]] run dnx-run-spt to "1213"
 
 test catch fallthrough [[
 (
-try (
-  throw 42
-) catch ex in (
-  printi(ex)
-);
-13
+  try (
+    throw 42
+  ) catch ex in (
+    printi(ex)
+  );
+  13
 )
 ]] run dnx-run-spt to "4213"
