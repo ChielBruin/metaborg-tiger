@@ -19,7 +19,6 @@ rules
   eval-exp(Geq(e1, e2)) =
     v1 <- eval-exp(e1);
     v2 <- eval-exp(e2);
-    // Todo: fix this, it does not follow the Tiger spec
     return(ior(igt(v1, v2), ieq(v1, v2)))
     
   eval-exp(Leq(e1, e2)) =
@@ -70,6 +69,10 @@ rules
     jumpz(ieq(v2, int(0)), k, throw_b)  
     
   eval-exp(And(e1, e2)) =
-    v1 <- eval-exp(e1);
-    v2 <- eval-exp(e2);
-    return(iand(v1, v2))    
+    res <- eval-exp(
+    	If(e1,
+    		If(e2, Int(1), Int(0)), 
+    		Int(0)
+    	)
+    );
+    return(res)
