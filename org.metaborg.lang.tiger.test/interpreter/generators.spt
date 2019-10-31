@@ -1,0 +1,51 @@
+module interpreter/exceptions
+
+language Tiger
+
+test generator with break [[
+let 
+  generator gen(n : int, o : int, p : int) : int = (
+    yield n;
+    yield o;
+    yield p
+  )
+  var x : int := 0
+  in
+    for i in gen(2, 3, 4) do (
+      if i = 3 then break;
+      printi(i)
+    );
+    x
+end
+]] run dnx-run-spt to "20"
+
+test generator without yield [[
+let 
+  generator gen() : int = (
+    printi(1)
+  )
+  var x : int := 0
+  in
+    for i in gen() do (
+      printi(i)
+    );
+    x
+end
+]] run dnx-run-spt to "10"
+
+test generator exception handling [[
+let 
+  generator gen() : int = (
+    throw 1
+  )
+  var x : int := 0
+  in
+    try (
+      for i in gen() do (
+        printi(i)
+      )
+    ) catch ex in (
+      printi(ex)
+    )
+end
+]] run dnx-run-spt to "1"

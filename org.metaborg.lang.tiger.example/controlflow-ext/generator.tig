@@ -1,0 +1,14 @@
+let 
+  generator gen(n : int, o : int, p : int) : int = (
+    yield n;
+    yield o;
+    yield p
+  )
+  var x : int := 0
+  in
+    for i in gen(2, 3, 4) do (
+      if i = 3 then break;
+      printi(i)
+    );
+    x
+end
