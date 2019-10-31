@@ -27,3 +27,4 @@ context-free syntax // semantic types
   Ty.RECORD   = <RECORD <Scope>>
   Ty.ARRAY    = <ARRAY <Ty> <Scope>> 
   Ty.FUN      = <FUN ( <{Ty ","}*> ) <Ty>>
+  Ty.GEN      = <GEN <Ty>>

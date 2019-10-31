@@ -11,6 +11,7 @@ lexical restrictions
 lexical syntax
 
   Id = "throw" {reject}
+  Id = "yield" {reject}
   
   Id = "nil" {reject}
   Id = "let" {reject}

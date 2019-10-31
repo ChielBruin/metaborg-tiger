@@ -42,6 +42,11 @@ context-free syntax
       <Exp>
   > 
   
+  Exp.ForIn = <
+    for <Var> in <Exp> do 
+      <Exp>
+  > 
+  
   Exp.Break = <break> 
 
 context-free priorities
