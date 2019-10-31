@@ -31,3 +31,5 @@ test Eq 2 [[2 = 2]]   run dnx-run-spt to "1"
 
 test And 1 [[0 & 1]]  run dnx-run-spt to "0"
 test And 2 [[2 < 4 & 1 < 2]] run dnx-run-spt to "1"
+test And 3 [[0 & 12]]  run dnx-run-spt to "0"
+test And 4 [[42 & 12]]  run dnx-run-spt to "1"
