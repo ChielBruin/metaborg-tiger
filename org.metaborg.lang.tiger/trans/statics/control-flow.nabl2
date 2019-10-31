@@ -7,23 +7,29 @@ imports statics/base
 rules // Try-Catch
 
   [[stm@Throw(e1) ^(s) : UNIT()]] :=
-    Catch{"__catch__"@stm} -> s,
-    Catch{"__catch__"@stm} |-> d,
-    d : ty1,
-    [[e1 ^(s) : ty2]],
-    ty1 == ty2 | error $[Expected [ty1], but found [ty2]].
+    [[e1 ^(s) : INT()]].
     
   [[ stm@TryCatch(e1, Var(var), e2) ^ (s) : UNIT() ]] :=
      new try_s, try_s ---> s,
      new catch_s, catch_s ---> s,
-     Catch{"__catch__"@stm} <- try_s,
-     Catch{"__catch__"@stm} : INT()!,
      Var{var} <- catch_s,
      Var{var} : INT()!,
      
      [[ e1 ^ (try_s)   : UNIT() ]], 
      [[ e2 ^ (catch_s) : UNIT() ]].
 
+rules // For-in
+  [[ stm@ForIn(Var(var), gen_exp, body) ^(s) : UNIT() ]] := 
+     new s_for, s_for ---> s,
+     Var{var} <- s_for,
+     Var{var} : ty!,
+     Loop{"__break__"@stm} <- s_for,
+     Loop{"__break__"@stm} : UNIT(),
+     [[ gen_exp ^ (s) : GEN(ty) ]],
+     [[ body ^ (s_for) : UNIT() ]]. // x bound in body
+    
+    
+    
 rules // sequence
 
   Seq[[ [] ^ (s) : UNIT() ]].  

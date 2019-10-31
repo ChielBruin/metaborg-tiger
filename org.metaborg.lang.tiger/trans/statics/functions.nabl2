@@ -13,6 +13,20 @@ rules // function declarations
   Dec[[ FunDecs(fdecs) ^ (s, s_outer) ]] :=
      Map2[[ fdecs ^ (s, s_outer) ]].
      
+  [[ d@GenDec(f, args, type, body) ^ (s, s_outer) ]] :=
+     new s_fun, s_fun ---> s, 
+     distinct/name D(s_fun) | error $[duplicate argument] @ NAMES, 
+     MapTs2[[ args ^ (s_fun, s_outer) : tys ]],
+     [[ type ^ (s_outer) : ty ]],
+     
+     Return{"__return__"@d} <- s_fun,
+     Return{"__return__"@d} : ty!,
+     
+     Var{f} <- s, 
+     Var{f} : FUN(tys, GEN(ty)) !, 
+     
+     [[ body ^ (s_fun) : UNIT() ]].
+     
   [[ d@ProcDec(f, args, e) ^ (s, s_outer) ]] :=
 //     Args[[ args ^ (s_fun, s_outer) : tys ]], 
      new s_fun,
@@ -59,3 +73,10 @@ rules // function calls
      MapSTs[[ exps ^ (s) : tys ]].
      
      // todo: error messages per argument
+     
+  [[stm@Yield(exp) ^(s) : UNIT()]] :=
+    Return{"__return__"@stm} -> s,
+    Return{"__return__"@stm} |-> d,
+    d : rty,
+    [[exp ^(s) : rty]].
+    
