@@ -7,7 +7,7 @@ let
         else
           let 
             var a : int := n - 1
-            var b : int := fact(a)            
+            var b : int := fact(a)   
             var c : int := n * b 
            in c
           end

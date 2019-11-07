@@ -94,7 +94,7 @@ rules
   compile-print(m) = 
     print_b = <
       dnx_print <- dnx-print-string($ret);
-      cf <- newCF(cur(), int(1));
+      cf <- newCF(cur());
       setC(cf, $ret, curC(~ret));
       callCF(cf, dnx_print)
     >;
@@ -108,7 +108,7 @@ rules
       itos <- dnx-int-to-string($ret);
       df <- new(int(1));
       set(df, [0], get(cur(), [0]));
-      cf <- newCF(df, int(1));
+      cf <- newCF(df);
       setC(cf, $ret, curC(~print_string));
       callCF(cf, itos)
     >;
@@ -118,7 +118,7 @@ rules
       string <- pop();
       df <- new(int(1));
       set(df, [0], string);
-      cf <- newCF(df, int(1));
+      cf <- newCF(df);
       setC(cf, $ret, curC(~ret));
       callCF(cf, print_s)
     >;
