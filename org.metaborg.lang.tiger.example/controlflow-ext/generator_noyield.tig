@@ -1,0 +1,11 @@
+let
+  generator gen() : int = (
+	printi(12)
+  )
+  var x : int := 0
+  in
+    for i in gen() do (
+      printi(i)
+    );
+    x
+end
