@@ -21,17 +21,14 @@ rules // Try-catch
     link(try_df  , cur(), &P);
     link(catch_df, cur(), &P);
     
-    try_cf   <- newCF(try_df, int(3));
-    catch_cf <- newCF(catch_df, int(3));
+    try_cf   <- newCF(try_df);
+    catch_cf <- newCF(catch_df);
 
     next <- curC(k);
     
-    setC(try_cf  , $ret , getC(curCF(), $ret));
     setC(try_cf  , $ex  , newC(catch_cf, catch_b));
     setC(try_cf  , $next, next);
 
-    setC(catch_cf, $ret , getC(curCF(), $ret));
-    setC(catch_cf, $ex  , getC(curCF(), $ex));
     setC(catch_cf, $next, next);
     
     callCF(try_cf, try_b)

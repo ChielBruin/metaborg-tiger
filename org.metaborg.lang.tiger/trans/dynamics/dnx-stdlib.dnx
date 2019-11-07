@@ -37,7 +37,7 @@ rules
 	  
 	  df <- new(int(1));
 	  set(df, [0], get(cur(), [0]));
-	  cf <- newCF(df, int(1));
+	  cf <- newCF(df);
 	  setC(cf, ~lbl, curC(~int-to-string2));
 	  callCF(cf, ~calc-length)
 	>;
