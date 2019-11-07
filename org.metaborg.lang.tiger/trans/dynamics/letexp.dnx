@@ -39,7 +39,7 @@ rules // Let bindings
     >;
     gen_body = <
       v1 <-eval-exp(~body);
-      callC(getC(curCF(), $ex), int(-1234))
+      func-void-return($ret)
     >;
     variable-assign(name, "Var", gen_init);
     eval-let-binds(tail)

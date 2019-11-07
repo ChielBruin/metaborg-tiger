@@ -39,7 +39,14 @@ rules // Try-catch
 
 rules // For in
   eval-exp(stmt@ForIn(Var(var), gen_exp, body)); k(null()) =
-    !ex;
+    break_path = resolve("__break__"@stmt, "Loop");
+    var_path = resolve(var, "Var");
+    exec_body_init = <
+      gen <- get(cur(), resolve(~var, "Var"));
+      gen_cf <- unpackC(gen);
+      setC(gen_cf, $yield, curC(~exec_body));
+      callC(gen)
+    >;
     exec_body = <
       gen <- pop();
       val <- pop();
@@ -47,34 +54,22 @@ rules // For in
       v <- eval-exp(~body);
       callC(gen)
     >;
-    check_exit = <
-      ~ex <- pop();
-      jumpz(ieq(~ex, int(-1234)), ~rethrow, ~exit)  
-    >;
-    rethrow = <
-      callC(getC(curCF(), $ex), ~ex)
-    >;
-    exit = <
-      mkcur(get(cur(), [&P]));
-      jump(~k)
-    >;
-    
     gen <- eval-exp(gen_exp);
     for_s <- new(int(2));
     link(for_s, cur(), &P);
-    mkcur(for_s);
     
-    break_path = resolve("__break__"@stmt, "Loop");
-    set(cur(), break_path, curC(exit));
+    exit_c <- curC(k);
+    set(for_s, break_path, exit_c);
+    set(for_s, var_path, gen);
     
-    gen_cf <- unpackC(gen);
-    setC(gen_cf, $ret, curC(exec_body));
-    setC(gen_cf, $ex, curC(check_exit));
-    callC(gen)
+    for_cf <- newCF(for_s);
+    setC(for_cf, $ret, exit_c);
+    setC(unpackC(gen), $ret, exit_c);
+    callCF(for_cf, exec_body_init)
     
   eval-exp(Yield(exp)); k(null()) = 
     val <- eval-exp(exp);
-    callC(getC(curCF(), $ret), val, curC(k))
+    callC(getC(curCF(), $yield), val, curC(k))
     
 rules
   eval-exp(IfThen(cond, then)); k(null()) = 

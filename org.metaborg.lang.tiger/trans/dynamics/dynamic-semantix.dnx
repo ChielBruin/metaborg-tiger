@@ -19,7 +19,7 @@ signature
   continuations
     ret
     ex
-    next
+    next = yield
 
   namespaces
     Var
