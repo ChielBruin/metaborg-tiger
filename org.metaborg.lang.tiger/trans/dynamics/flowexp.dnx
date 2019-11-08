@@ -63,7 +63,6 @@ rules // For in
     set(for_s, var_path, gen);
     
     for_cf <- newCF(for_s);
-    setC(for_cf, $ret, exit_c);
     setC(unpackC(gen), $ret, exit_c);
     callCF(for_cf, exec_body_init)
     
