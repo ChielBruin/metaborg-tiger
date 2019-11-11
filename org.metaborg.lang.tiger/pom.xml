@@ -102,7 +102,7 @@
         <configuration>
           <artifactItems>
             <artifactItem>
-              <groupId>org.metaborg</groupId>
+              <groupId>org.metaborg.lang</groupId>
               <artifactId>framevm-core</artifactId>
               <type>jar</type>
               <overWrite>false</overWrite>
