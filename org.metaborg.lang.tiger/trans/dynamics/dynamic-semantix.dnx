@@ -69,6 +69,7 @@ rules
     
   compile-timing(m) =
     tick_b = <
+        forceGC();
     	tick();
     	res <- null();
     	func-return(res, $ret)
