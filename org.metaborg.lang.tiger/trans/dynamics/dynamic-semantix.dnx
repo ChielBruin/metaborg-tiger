@@ -19,12 +19,13 @@ signature
   continuations
     ret
     ex
-    next = yield
+    next
+    yield
+    break
 
   namespaces
     Var
     Field
-    Loop
   
   init-size = 15
     
@@ -71,6 +72,7 @@ rules
     
   compile-timing(m) =
     tick_b = <
+        forceGC();
     	tick();
     	res <- null();
     	func-return(res, $ret)
