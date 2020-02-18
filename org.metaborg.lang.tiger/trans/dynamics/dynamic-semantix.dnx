@@ -18,11 +18,11 @@ signature
     I
   continuations
     ret
+    break
 
   namespaces
     Var
     Field
-    Loop
   
   init-size = 15
     
