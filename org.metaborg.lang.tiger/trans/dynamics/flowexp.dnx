@@ -27,7 +27,7 @@ rules
       jump(~k)
     >
     
-  eval-exp(stmt@For(Var(idx_var), init, cond, body)); k(null()) =
+  eval-exp(For(Var(idx_var), init, cond, body)); k(null()) =
     idx_path = resolve(idx_var, "Var");
     !f_max;
     f_init = <
@@ -59,7 +59,7 @@ rules
     
     callC(newC(loop_cf, f_init), max)
     
-  eval-exp(stmt@While(cond, body)); k(null()) =    
+  eval-exp(While(cond, body)); k(null()) =    
     w_cond = <
       c <- eval-exp(~cond);
       jumpz(c, ~w_end, ~w_body)
